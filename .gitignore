@@ -2,3 +2,9 @@
 *.o
 *.exe
 *.a
+*.txt
+*.zip
+*.snap
+*.xml
+*.pdom
+*.prefs
