@@ -37,7 +37,7 @@ def _run_command(cmd, filename):
         for line in f:
             if line.find('error:') != -1:
                 if line.find('ignored') != -1:
-                    continue
+                    pass
                 else:
                     error_log_list.append('    >> ' + line)
         f.close()
@@ -47,7 +47,7 @@ def _run_command(cmd, filename):
         for line in f:
             if line.find('warning:') != -1:
                 if line.find('ignored') != -1:
-                    continue
+                    pass
                 else:
                     has_warning = 1;
                     if first_warning :
