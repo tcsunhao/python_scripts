@@ -10,9 +10,9 @@ pass_project_list = []
 error_log_list = []
 warning_log_list = []
 
-# rootdir = "E:\\tmp\\rc1\\SDK_2.0_FRDM-K66F_all\\boards\\frdmk66f"
-rootdir = "E:\\tmp\\rc1\\SDK_2.0_FRDM-K66F_all1\\boards\\frdmk66f\\usb"
-# rootdir = "E:\\git_sdk_2.0_feature_common\\mcu-sdk-2.0\\boards\\mapsks22\\rtos_examples"
+rootdir = "E:\\tmp\\rc1\\SDK_2.0_FRDM-K66F_all1\\boards\\frdmk66f"
+# rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all1\boards\frdmk66f\usb"
+rootdir = "E:\\git_sdk_2.0_feature_common\\mcu-sdk-2.0\\boards\\mapsks22\\usb_examples"
 kds_pass_number = 0
 kds_fail_number = 0
 kds_warning_number = 0
@@ -76,7 +76,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
             proj_name = filename_path.split('\\')[-1].split('.')[0]
             import_path = ('/').join(filename_path.split('\\')[0:-1])
             import_path = import_path.replace('/','\\',2)
-            # print import_path
+            print import_path
             kds_build_cmd = 'set path=%s;%s;%s && \
             "%s" --launcher.suppressErrors -nosplash -application "org.eclipse.cdt.managedbuilder.core.headlessbuild" -build "%s" -import "%s" -data "%s" >> %s 2>&1 ' % (
                     'C:\Freescale\KDS_3.0.0/bin',
