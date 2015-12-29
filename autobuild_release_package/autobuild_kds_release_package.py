@@ -4,21 +4,30 @@
 #   python autobuild_kds.py debug 
 #   python autobuild_kds.py release
 
-import re,os,sys,time,subprocess
+import re,os,sys,time,subprocess,shutil
 
 pass_project_list = []
 error_log_list = []
 warning_log_list = []
 
-rootdir = "E:\\tmp\\rc1\\SDK_2.0_FRDM-K66F_all1\\boards\\frdmk66f"
+# rootdir = "E:\\tmp\\rc1\\SDK_2.0_FRDM-K66F_all1\\boards\\frdmk66f"
+# rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all2\boards\frdmk66f"
 # rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all1\boards\frdmk66f\usb"
-rootdir = "E:\\git_sdk_2.0_feature_common\\mcu-sdk-2.0\\boards\\mapsks22\\usb_examples"
+rootdir = r"E:\git_sdk_2.0_feature_common\mcu-sdk-2.0\boards\frdmk64f\usb_examples\usb_device_audio_generator"
+# rootdir = "E:\\git_sdk_2.0_feature_common\\mcu-sdk-2.0\\boards\\mapsks22\\usb_examples"
 kds_pass_number = 0
 kds_fail_number = 0
 kds_warning_number = 0
 
 has_warning = 0
 first_warning = 1
+
+def __search_kds():
+    try:
+        workbenchPath = os.environ['KDS_WORKBENCH']
+    except KeyError:
+        raise RuntimeError("KDS_WORKBENCH environment variable is not set.")
+    return workbenchPath
 
 def _run_command(cmd, filename):
     global kds_pass_number
@@ -76,13 +85,15 @@ for parent,dirnames,filenames in os.walk(rootdir):
             proj_name = filename_path.split('\\')[-1].split('.')[0]
             import_path = ('/').join(filename_path.split('\\')[0:-1])
             import_path = import_path.replace('/','\\',2)
-            print import_path
+            # print import_path
+            kds_path = __search_kds()
+            # print kds_path
             kds_build_cmd = 'set path=%s;%s;%s && \
             "%s" --launcher.suppressErrors -nosplash -application "org.eclipse.cdt.managedbuilder.core.headlessbuild" -build "%s" -import "%s" -data "%s" >> %s 2>&1 ' % (
-                    'C:\Freescale\KDS_3.0.0/bin',
-                    'C:\Freescale\KDS_3.0.0/toolchain/bin',
+                    kds_path + '/bin',
+                    kds_path + '/toolchain/bin',
                     '%SystemRoot%\system32;%SystemRoot%',
-                    'C:\Freescale\KDS_3.0.0/eclipse/kinetis-design-studio',
+                    kds_path + '/eclipse/kinetis-design-studio',
                     proj_name + '/' + sys.argv[1],
                     import_path + '/',
                     './',
@@ -93,7 +104,8 @@ for parent,dirnames,filenames in os.walk(rootdir):
             sys.stdout.flush()
             _run_command(kds_build_cmd, proj_name)
 
-
+if os.path.isdir('./.metadata'):
+    shutil.rmtree('./.metadata')
 # set path=C:\Freescale\KDS_3.0.0/bin;C:\Freescale\KDS_3.0.0/toolchain/bin;%SystemRoot%\system32;%SystemRoot% && 
             # "C:\Freescale\KDS_3.0.0/eclipse/kinetis-design-studio" --launcher.suppressErrors -nosplash -application 
             # "org.eclipse.cdt.managedbuilder.core.headlessbuild" 
