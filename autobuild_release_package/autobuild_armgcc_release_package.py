@@ -9,10 +9,10 @@ import re,os,sys,time,subprocess
 error_log_list = []
 pass_project_list = []
 warning_log_list = []
-# rootdir = "E:\\sdk_release\\SDK_2.0_MAPS-KS22_all_RC1_b111115\\examples\\mapsks22\\driver_examples"
-rootdir = "E:\\git_sdk_2.0_ks22_rel\\mcu-sdk-2.0\\boards\\mapsks22\\usb"
-# rootdir = "E:\\git_sdk_2.0_mainline\\mcu-sdk-2.0\\boards\\mapsks22\\usb"
-# rootdir = "E:\\git_sdk_2.0_mainline\\mcu-sdk-2.0\\examples\\frdmk64f\\usb"
+
+# rootdir = r"E:\git_sdk_2.0_feature_common\mcu-sdk-2.0\boards\frdmk64f\usb_examples\usb_device_audio_generator"
+rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all2\boards\frdmk66f"
+
 armgcc_pass_number = 0
 armgcc_warning_number = 0
 armgcc_fail_number = 0
