@@ -4,7 +4,7 @@
 #   python autobuild_iar.py Debug 
 
 import re,os,sys,time,subprocess
-from log_filter import __warning_log_filter, __error_log_filter
+from log_filter import __warning_log_filter, __error_log_filter, __output_log
 
 # rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all2\boards\frdmk66f"
 rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all\boards\frdmk66f"
@@ -12,14 +12,12 @@ rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all\boards\frdmk66f"
 iar_extension_name = '\\*.ewp'
 
 iar_pass_number = 0
-iar_fail_number = 0
 iar_warning_number = 0
+iar_fail_number = 0
 
 pass_project_list = []
-error_log_list = []
 warning_log_list = []
-
-
+error_log_list = []
 
 # Find iarBuild.exe path in system
 def __search_iar():
@@ -58,11 +56,14 @@ def _run_command(cmd, filename_path, build_mode):
         iar_fail_number += 1
         error_log_list.append(proj_name + ' build failed\n')
         __error_log_filter('tmp_log.txt', error_log_list)
+        print 78*'X'
+        print filename + ' ' + 'build failed' + '\n'
     # If the project build passed, find the warnings
     else : 
         has_warning = __warning_log_filter('tmp_log.txt', warning_log_list, proj_name)
         if has_warning == 1:
             iar_warning_number += 1
+            print 78*'W'
             print filename + ' ' + 'build pass with warnings' + '\n'
         else:
             iar_pass_number += 1
@@ -71,11 +72,8 @@ def _run_command(cmd, filename_path, build_mode):
         
     os.remove('tmp_log.txt')
 
-# Create log file
-path_log_file = rootdir + '\\iar_build_log.txt'
-f_final_log = open(path_log_file,'w')
 
-iar_workbench_path = __search_iar()
+iar_bin_path = __search_iar()
 
 # Start the program
 for parent,dirnames,filenames in os.walk(rootdir):
@@ -83,48 +81,19 @@ for parent,dirnames,filenames in os.walk(rootdir):
         filename_path = os.path.join(parent,filename)
         iar_path = __search_iar()
         if re.search(r'\.ewp',filename_path):
-            _run_command(iar_workbench_path, filename_path, sys.argv[1])
+            _run_command(iar_bin_path, filename_path, sys.argv[1])
 
-print 30*'*' + 'BUILD RESULT' + 30*'*'
-print >> f_final_log, 30*'*' + 'BUILD RESULT' + 30*'*'
-print '%s' %(iar_pass_number) + ' projects build passed without warning:\n'
-print >> f_final_log, '%s' %(iar_pass_number) + ' projects build passed without warning:\n'
-print '%s' %(iar_warning_number) + ' projects build passed with warning:\n'
-print >> f_final_log,'%s' %(iar_warning_number) + ' projects build passed with warning:\n'
-print '%s' %(iar_fail_number) + ' projects build failed\n'
-print >> f_final_log, '%s' %(iar_fail_number) + ' projects build failed\n'
+log_member = (iar_pass_number, iar_warning_number, iar_fail_number, pass_project_list, warning_log_list, error_log_list, )
 
-if iar_pass_number != 0:
-    print 'The passed projects without warning are :'
-    print >> f_final_log, 'The passed projects without warning are :'
-    for mem in pass_project_list:
-        print '  ' + mem,
-        print >> f_final_log, '  ' + mem,
+# Create log file
+path_log_file = rootdir + '\\iar_build_log.txt'
+f_final_log = open(path_log_file,'w')
 
-print >> f_final_log, '\n'
-print >> f_final_log, 68*'*'
+__output_log(log_member, f_final_log)
 
-if iar_warning_number != 0 :
-    print '\n'
-    print 'The warning log is :' 
-    print >> f_final_log, 'The warning log is :' 
-    for mem in warning_log_list:
-        print '  ' + mem,
-        print >> f_final_log, '  ' + mem,
-
-print >> f_final_log, '\n'
-print >> f_final_log, 68*'*'
-
-if iar_fail_number != 0 :
-    print '\n'
-    print 'The error log is :' 
-    print >> f_final_log, 'The error log is :' 
-    for mem in error_log_list:
-        print '  ' + mem,
-        print >> f_final_log, '  ' + mem,
- 
 f_final_log.close()
+
 print 78*'*'
 print 78*'*'
-print "Please refer the C:\\iar_build_log_file\\final_log.txt for the build log"
+print "Please refer the %s for the build log " % path_log_file
  

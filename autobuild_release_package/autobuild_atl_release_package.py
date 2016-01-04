@@ -6,21 +6,17 @@
 
 import re,os,sys,time,subprocess,stat,shutil
 import  xml.dom.minidom
+from log_filter import __warning_log_filter, __error_log_filter, __output_log
+
+rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all\boards\frdmk66f"
 
 pass_project_list = []
-error_log_list = []
 warning_log_list = []
+error_log_list = []
 
-# rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all1\boards\frdmk66f\usb_host_audio_speaker\bm\atl"
-rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all2\boards\frdmk66f"
-# rootdir = "E:\\tmp\\rc1\\SDK_2.0_FRDM-K66F_all1\\boards\\frdmk66f"
-# rootdir = "E:\\git_sdk_2.0_feature_common\\mcu-sdk-2.0\\boards\\mapsks22\\usb_examples"
 atl_pass_number = 0
-atl_fail_number = 0
 atl_warning_number = 0
-
-has_warning = 0
-first_warning = 1
+atl_fail_number = 0
 
 def __search_atl():
     try:
@@ -30,52 +26,32 @@ def __search_atl():
 
     return workbenchPath
 
-def _run_command(cmd, filename):
+def _run_command(cmd, proj_name):
     global atl_pass_number
     global atl_fail_number
     global atl_warning_number
-    global has_warning
-    global first_warning
-    # print cmd
+
     task = subprocess.Popen(cmd, 0, stdin=None, stdout=None, stderr=None, shell=True)
     returncode = task.wait()
-    f = open('./log.txt','r')   
-    if returncode != 0: 
-        print filename + " build failed",
-        print "*"*76
-        error_log_list.append(proj_name)
-        for line in f:
-            if line.find('error:') != -1:
-                if line.find('ignored') != -1:
-                    continue
-                else:
-                    error_log_list.append('    >> ' + line)
-        f.close()
-        atl_fail_number += 1
-    else:
-        first_warning = 1
-        for line in f:
-            if line.find('warning:') != -1:
-                if line.find('ignored') != -1:
-                    continue
-                else:
-                    has_warning = 1;
-                    if first_warning :
-                        warning_log_list.append(proj_name + ' build passed with warnings\n')
-                        first_warning = 0;
-                    warning_log_list.append('    >> ' + line)
 
+    if returncode != 0: 
+        atl_fail_number += 1
+        error_log_list.append(proj_name + ' build failed\n')
+        __error_log_filter('tmp_log.txt', error_log_list)
+        print 78*'X'
+        print filename + ' ' + 'build failed' + '\n'
+    else:
+        has_warning = __warning_log_filter('tmp_log.txt', warning_log_list, proj_name)
         if has_warning == 1:
             atl_warning_number += 1
-            has_warning = 0;        
-            print proj_name + ' ' + 'build pass with warnings'
+            print 78*'W'
+            print filename + ' ' + 'build pass with warnings' + '\n'
         else:
             atl_pass_number += 1
-            pass_project_list.append(proj_name)
-            print proj_name + ' ' + 'build pass without warnings'
+            print filename + ' ' + 'build pass without warnings' + '\n'
+            pass_project_list.append(proj_name + '\n')
     
-    f.close()   
-    os.remove('.\log.txt')
+    os.remove('tmp_log.txt')
 
 for parent,dirnames,filenames in os.walk(rootdir):
     for filename in filenames:
@@ -117,7 +93,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
                             proj_name + '/' + sys.argv[1],
                             import_path + '/',
                             './',
-                            './log.txt'
+                            './tmp_log.txt'
                             )
                 # print atl_build_cmd
                 print 'Building ' + proj_name + ' ' + sys.argv[1]
@@ -131,53 +107,17 @@ if os.path.isdir('./.metadata'):
             # "org.eclipse.cdt.managedbuilder.core.headlessbuild" 
             # -build "host_audio_speaker_bm_mapsks22/debug" 
             # -import "E:\git_sdk_2.0_mainline\mcu-sdk-2.0/examples/mapsks22/usb/usb_host_audio_speaker/bm/atl/" -data "./" >> ./log.txt 2>&1
-if os.path.exists("C:\\atl_build_log_file"):
-    pass
-else :
-    os.mkdir("C:\\atl_build_log_file") 
 
-f_final_log = open('C:\\atl_build_log_file\\final_log.txt','w')
+log_member = (atl_pass_number, atl_warning_number, atl_fail_number, pass_project_list, warning_log_list, error_log_list, )
 
-print 30*'*' + 'BUILD RESULT' + 30*'*'
-print >> f_final_log, 30*'*' + 'BUILD RESULT' + 30*'*'
-print '%s' %(atl_pass_number) + ' projects build passed without warnings:\n'
-print >> f_final_log, '%s' %(atl_pass_number) + ' projects build passed without warnings:\n'
-print '%s' %(atl_warning_number) + ' projects build passed with warning:\n'
-print >> f_final_log,'%s' %(atl_warning_number) + ' projects build passed with warning:\n'
-print '%s' %(atl_fail_number) + ' projects build failed\n'
-print >> f_final_log, '%s' %(atl_fail_number) + ' projects build failed:\n'
+# Create log file
+path_log_file = rootdir + '\\atl_build_log.txt'
+f_final_log = open(path_log_file,'w')
 
-if atl_pass_number != 0:
-    print 'The passed projects without warning are :'
-    print >> f_final_log, 'The passed projects without warning are :'
-    for mem in pass_project_list:
-        print '  ' + mem + '\n',
-        print >> f_final_log, '  ' + mem
+__output_log(log_member, f_final_log)
 
-print >> f_final_log, '\n'
-print >> f_final_log, 68*'*'
-
-if atl_warning_number != 0 :
-    print '\n'
-    print 'The warning log is :' 
-    print >> f_final_log, 'The warning log is :' 
-    for mem in warning_log_list:
-        print '  ' + mem + '\n',
-        print >> f_final_log, '  ' + mem
-
-print >> f_final_log, '\n'
-print >> f_final_log, 68*'*'
-
-if atl_fail_number != 0 :
-    print 'The error log is :' 
-    print >> f_final_log, 'The error log is :' 
-    for mem in error_log_list:
-        print '  ' + mem + '\n',
-        print >> f_final_log, '  ' + mem
- 
- 
 f_final_log.close()
 
 print 78*'*'
 print 78*'*'
-print "Please refer the C:\\atl_build_log_file\\final_log.txt for the build log"
+print "Please refer the %s for the build log " % path_log_file

@@ -5,22 +5,17 @@
 #   python autobuild_kds.py release
 
 import re,os,sys,time,subprocess,shutil
+from log_filter import __warning_log_filter, __error_log_filter, __output_log
+
+rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all\boards\frdmk66f"
 
 pass_project_list = []
-error_log_list = []
 warning_log_list = []
+error_log_list = []
 
-# rootdir = "E:\\tmp\\rc1\\SDK_2.0_FRDM-K66F_all1\\boards\\frdmk66f"
-# rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all2\boards\frdmk66f"
-# rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all1\boards\frdmk66f\usb"
-rootdir = r"E:\git_sdk_2.0_feature_common\mcu-sdk-2.0\boards\frdmk64f\usb_examples\usb_device_audio_generator"
-# rootdir = "E:\\git_sdk_2.0_feature_common\\mcu-sdk-2.0\\boards\\mapsks22\\usb_examples"
 kds_pass_number = 0
-kds_fail_number = 0
 kds_warning_number = 0
-
-has_warning = 0
-first_warning = 1
+kds_fail_number = 0
 
 def __search_kds():
     try:
@@ -29,52 +24,32 @@ def __search_kds():
         raise RuntimeError("KDS_WORKBENCH environment variable is not set.")
     return workbenchPath
 
-def _run_command(cmd, filename):
+def _run_command(cmd, proj_name):
     global kds_pass_number
     global kds_fail_number
     global kds_warning_number
-    global has_warning
-    global first_warning
-    # print cmd
+
     task = subprocess.Popen(cmd, 0, stdin=None, stdout=None, stderr=None, shell=True)
     returncode = task.wait()
-    f = open('./log.txt','r')   
-    if returncode != 0: 
-        print filename + " build failed",
-        print "*"*76
-        error_log_list.append(proj_name)
-        for line in f:
-            if line.find('error:') != -1:
-                if line.find('ignored') != -1:
-                    pass
-                else:
-                    error_log_list.append('    >> ' + line)
-        f.close()
-        kds_fail_number += 1
-    else:
-        first_warning = 1
-        for line in f:
-            if line.find('warning:') != -1:
-                if line.find('ignored') != -1:
-                    pass
-                else:
-                    has_warning = 1;
-                    if first_warning :
-                        warning_log_list.append(proj_name + ' build passed with warnings\n')
-                        first_warning = 0;
-                    warning_log_list.append('    >> ' + line)
 
+    if returncode != 0: 
+        kds_fail_number += 1
+        error_log_list.append(proj_name + ' build failed\n')
+        __error_log_filter('tmp_log.txt', error_log_list)
+        print 78*'X'
+        print filename + ' ' + 'build failed' + '\n'
+    else:
+        has_warning = __warning_log_filter('tmp_log.txt', warning_log_list, proj_name)
         if has_warning == 1:
             kds_warning_number += 1
-            has_warning = 0;        
-            print proj_name + ' ' + 'build pass with warnings'
+            print 78*'W'
+            print filename + ' ' + 'build pass with warnings' + '\n'
         else:
             kds_pass_number += 1
-            pass_project_list.append(proj_name)
-            print proj_name + ' ' + 'build pass without warnings'
-    
-    f.close()   
-    os.remove('.\log.txt')
+            print filename + ' ' + 'build pass without warnings' + '\n'
+            pass_project_list.append(proj_name + '\n')
+        
+    os.remove('tmp_log.txt')
 
 for parent,dirnames,filenames in os.walk(rootdir):
     for filename in filenames:
@@ -97,7 +72,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
                     proj_name + '/' + sys.argv[1],
                     import_path + '/',
                     './',
-                    './log.txt'
+                    './tmp_log.txt'
                     )
             # print kds_build_cmd
             print 'Building ' + proj_name + ' ' + sys.argv[1]
@@ -111,53 +86,16 @@ if os.path.isdir('./.metadata'):
             # "org.eclipse.cdt.managedbuilder.core.headlessbuild" 
             # -build "host_audio_speaker_bm_mapsks22/debug" 
             # -import "E:\git_sdk_2.0_mainline\mcu-sdk-2.0/examples/mapsks22/usb/usb_host_audio_speaker/bm/kds/" -data "./" >> ./log.txt 2>&1
-if os.path.exists("C:\\kds_build_log_file"):
-    pass
-else :
-    os.mkdir("C:\\kds_build_log_file") 
+log_member = (kds_pass_number, kds_warning_number, kds_fail_number, pass_project_list, warning_log_list, error_log_list, )
 
-f_final_log = open('C:\\kds_build_log_file\\final_log.txt','w')
+# Create log file
+path_log_file = rootdir + '\\kds_build_log.txt'
+f_final_log = open(path_log_file,'w')
 
-print 30*'*' + 'BUILD RESULT' + 30*'*'
-print >> f_final_log, 30*'*' + 'BUILD RESULT' + 30*'*'
-print '%s' %(kds_pass_number) + ' projects build passed:\n'
-print >> f_final_log, '%s' %(kds_pass_number) + ' projects build passed:\n'
-print '%s' %(kds_warning_number) + ' projects build passed with warning:\n'
-print >> f_final_log,'%s' %(kds_warning_number) + ' projects build passed with warning:\n'
-print '%s' %(kds_fail_number) + ' projects build failed\n'
-print >> f_final_log, '%s' %(kds_fail_number) + ' projects build failed:\n'
+__output_log(log_member, f_final_log)
 
-if kds_pass_number != 0:
-    print 'The passed projects without warning are :'
-    print >> f_final_log, 'The passed projects without warning are :'
-    for mem in pass_project_list:
-        print '  ' + mem + '\n',
-        print >> f_final_log, '  ' + mem
-
-print >> f_final_log, '\n'
-print >> f_final_log, 68*'*'
-
-if kds_warning_number != 0 :
-    print '\n'
-    print 'The warning log is :' 
-    print >> f_final_log, 'The warning log is :' 
-    for mem in warning_log_list:
-        print '  ' + mem + '\n',
-        print >> f_final_log, '  ' + mem
-
-print >> f_final_log, '\n'
-print >> f_final_log, 68*'*'
-
-if kds_fail_number != 0 :
-    print 'The error log is :' 
-    print >> f_final_log, 'The error log is :' 
-    for mem in error_log_list:
-        print '  ' + mem + '\n',
-        print >> f_final_log, '  ' + mem
- 
- 
 f_final_log.close()
 
 print 78*'*'
 print 78*'*'
-print "Please refer the C:\\kds_build_log_file\\final_log.txt for the build log"
+print "Please refer the %s for the build log " % path_log_file
