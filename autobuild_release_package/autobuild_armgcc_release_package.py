@@ -36,7 +36,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
             # print dirname_path
             bat_file_path = dirname_path + '\\build_%s.bat' % (sys.argv[1])
             newbat_file_path = dirname_path + '\\newbuild_%s.bat' % (sys.argv[1])
-            
+            sh_file_path = dirname_path + '\\build_%s.sh' % (sys.argv[1])
             f_bat = open(bat_file_path,'r')
             f_newbat = open(newbat_file_path,'w')
             
