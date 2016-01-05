@@ -5,6 +5,7 @@
 #   python autobuild_kds.py release
 
 import re,os,sys,time,subprocess,shutil
+import xml.dom.minidom
 from log_filter import __warning_log_filter, __error_log_filter, __output_log
 
 rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all\boards\frdmk66f"
@@ -37,16 +38,16 @@ def _run_command(cmd, proj_name):
         error_log_list.append(proj_name + ' build failed\n')
         __error_log_filter('tmp_log.txt', error_log_list)
         print 78*'X'
-        print filename + ' ' + 'build failed' + '\n'
+        print proj_name + ' ' + 'build failed' + '\n'
     else:
         has_warning = __warning_log_filter('tmp_log.txt', warning_log_list, proj_name)
         if has_warning == 1:
             kds_warning_number += 1
             print 78*'W'
-            print filename + ' ' + 'build pass with warnings' + '\n'
+            print proj_name + ' ' + 'build pass with warnings' + '\n'
         else:
             kds_pass_number += 1
-            print filename + ' ' + 'build pass without warnings' + '\n'
+            print proj_name + ' ' + 'build pass without warnings' + '\n'
             pass_project_list.append(proj_name + '\n')
         
     os.remove('tmp_log.txt')
@@ -56,11 +57,15 @@ for parent,dirnames,filenames in os.walk(rootdir):
         filename_path = os.path.join(parent,filename)
         # kds_project_path = dirname_path + kds_extension_name
         if re.search(r'wsd',filename_path):
-            # print filename_path
-            proj_name = filename_path.split('\\')[-1].split('.')[0]
+            # Get project name from the .project
+            file_project_path = ('\\').join(filename_path.split('\\')[0:-1]) + '\\.project'
+            dom = xml.dom.minidom.parse(file_project_path)
+            cproject_root = dom.documentElement
+            tag_name = cproject_root.getElementsByTagName('name')
+            tag0_name = tag_name[0]
+            proj_name = tag0_name.firstChild.data
             import_path = ('/').join(filename_path.split('\\')[0:-1])
             import_path = import_path.replace('/','\\',2)
-            # print import_path
             kds_path = __search_kds()
             # print kds_path
             kds_build_cmd = 'set path=%s;%s;%s && \

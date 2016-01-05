@@ -7,7 +7,7 @@
 import re,os,sys,time,subprocess
 from log_filter import __warning_log_filter, __error_log_filter, __output_log
 
-rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all1\boards\frdmk66f"
+rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all\boards\frdmk66f"
 
 keil_extension_name = '\\*.uvprojx'
 

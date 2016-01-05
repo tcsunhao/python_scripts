@@ -5,7 +5,7 @@
 #   python autobuild_atl.py release
 
 import re,os,sys,time,subprocess,stat,shutil
-import  xml.dom.minidom
+import xml.dom.minidom
 from log_filter import __warning_log_filter, __error_log_filter, __output_log
 
 rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all\boards\frdmk66f"
@@ -39,16 +39,16 @@ def _run_command(cmd, proj_name):
         error_log_list.append(proj_name + ' build failed\n')
         __error_log_filter('tmp_log.txt', error_log_list)
         print 78*'X'
-        print filename + ' ' + 'build failed' + '\n'
+        print proj_name + ' ' + 'build failed' + '\n'
     else:
         has_warning = __warning_log_filter('tmp_log.txt', warning_log_list, proj_name)
         if has_warning == 1:
             atl_warning_number += 1
             print 78*'W'
-            print filename + ' ' + 'build pass with warnings' + '\n'
+            print proj_name + ' ' + 'build pass with warnings' + '\n'
         else:
             atl_pass_number += 1
-            print filename + ' ' + 'build pass without warnings' + '\n'
+            print proj_name + ' ' + 'build pass without warnings' + '\n'
             pass_project_list.append(proj_name + '\n')
     
     os.remove('tmp_log.txt')
@@ -61,13 +61,12 @@ for parent,dirnames,filenames in os.walk(rootdir):
             if filename_path.find('kds') != -1:
                 pass
             else:
-                # print filename_path
+                # Get project name from the .project
                 dom = xml.dom.minidom.parse(filename_path)
                 cproject_root = dom.documentElement
                 tag_name = cproject_root.getElementsByTagName('name')
                 tag0_name = tag_name[0]
                 proj_name = tag0_name.firstChild.data
-                # print proj_name
                 import_path = ('/').join(filename_path.split('\\')[0:-1])
                 import_path = import_path.replace('/','\\',2)
                 # print import_path

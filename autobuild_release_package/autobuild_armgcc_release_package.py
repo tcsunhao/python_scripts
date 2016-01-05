@@ -21,8 +21,17 @@ for parent,dirnames,filenames in os.walk(rootdir):
     for filename in filenames:
         filename_path = os.path.join(parent,filename)
         if re.search(r'CMakeLists',filename_path):
-            proj_name = filename_path.split('\\')[-3]           
-            # print proj_name
+            # Get the project name from the cmakelist
+            f_cmakelist = open(filename_path,'r')
+            for line in f_cmakelist:
+                if re.search(r'TARGET_LINK_LIBRARIES',line):
+                    search_obj = re.search(r'.*elf', line)
+                    if search_obj:
+                        proj_name = search_obj.group().split('(')[-1].split('.')[0]
+                        print proj_name
+                    break
+            f_cmakelist.close()    
+            
             dirname_path = ('\\').join(filename_path.split('\\')[0:-1])
             os.chdir(dirname_path)
 
