@@ -37,6 +37,8 @@ def _run_command(cmd, proj_name):
     global keil_warning_number
     global keil_fail_number
 
+    keil_tmp_log_path = '\\keil_%s_tmp_log.txt' % sys.argv[1]
+
     task = subprocess.Popen(cmd, 0, stdin=None, stdout=None, stderr=None,shell = True)
     returncode = task.wait()
 
@@ -48,15 +50,15 @@ def _run_command(cmd, proj_name):
         print 78*'W'
         print proj_name + " build passed with warnings.\n"
         keil_warning_number += 1
-        __warning_log_filter(rootdir + '\\keil_tmp_log.txt', warning_log_list, proj_name)
+        __warning_log_filter(rootdir + keil_tmp_log_path, warning_log_list, proj_name)
     else:
         print 78*'X'
         print proj_name + " build failed.\n"
         keil_fail_number += 1
         error_log_list.append(proj_name + ' build failed\n')
-        __error_log_filter(rootdir + '\\keil_tmp_log.txt', error_log_list)
+        __error_log_filter(rootdir + keil_tmp_log_path, error_log_list)
 
-    os.remove(rootdir + '\\keil_tmp_log.txt')
+    os.remove(rootdir + keil_tmp_log_path)
 
 for parent,dirnames,filenames in os.walk(rootdir):
     for filename in filenames:
@@ -64,7 +66,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
         if re.search(r'uvprojx',filename_path):
             proj_name = filename_path.split('\\')[-1].split('.')[0]
             keil_bin_path = __search_keil()
-            keil_cmd = '''%s -b %s -o %s\\keil_tmp_log.txt -j0 -t "%s %s"''' %(keil_bin_path, filename_path, rootdir, proj_name, sys.argv[1])
+            keil_cmd = '''%s -b %s -o %s\\keil_%s_tmp_log.txt -j0 -t "%s %s"''' %(keil_bin_path, filename_path, rootdir,sys.argv[1],proj_name, sys.argv[1])
             print keil_cmd
             sys.stdout.flush()
             _run_command(keil_cmd, proj_name)
@@ -73,7 +75,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
 log_member = (keil_pass_number, keil_warning_number, keil_fail_number, pass_project_list, warning_log_list, error_log_list, )
 
 # Create log file
-path_log_file = rootdir + '\\keil_build_log.txt'
+path_log_file = rootdir + '\\keil_%s_build_log.txt' % sys.argv[1]
 f_final_log = open(path_log_file,'w')
 
 __output_log(log_member, f_final_log)

@@ -53,12 +53,15 @@ for parent,dirnames,filenames in os.walk(rootdir):
                 f_newbat = open(newbat_file_path,'r')
                 file_content = f_newbat.read()
                 if file_content.find('build_log.txt') == -1:
-                    file_content = file_content.strip('\n') + ' ' + '2> build_log.txt'
+                    file_content = file_content.strip('\n') + ' ' + '2> build_%s_log.txt' % sys.argv[1]
                 f_newbat.close()
                 f_newbat = open(newbat_file_path,'w')
                 f_newbat.write(file_content)
                 f_newbat.close()
-            
+                armgcc_tmp_log_path = 'build_%s_log.txt' % sys.argv[1]
+            else:
+                armgcc_tmp_log_path = 'build_log.txt'
+                
             print proj_name + ' ' + 'build start: ' 
             sys.stdout.flush()
             
@@ -68,12 +71,12 @@ for parent,dirnames,filenames in os.walk(rootdir):
             if returncode != 0:
                 armgcc_fail_number += 1
                 error_log_list.append(proj_name + ' build failed\n')
-                __error_log_filter('build_log.txt', error_log_list)
+                __error_log_filter(armgcc_tmp_log_path, error_log_list)
                 print 78*'X'
                 print proj_name + ' ' + 'build failed\n'
                 sys.stdout.flush()
             else : 
-                has_warning = __warning_log_filter('build_log.txt', warning_log_list, proj_name)
+                has_warning = __warning_log_filter(armgcc_tmp_log_path, warning_log_list, proj_name)
                 if has_warning == 1:
                     armgcc_warning_number += 1
                     print 78*'W'
@@ -89,7 +92,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
 log_member = (armgcc_pass_number, armgcc_warning_number, armgcc_fail_number, pass_project_list, warning_log_list, error_log_list, )
 
 # Create log file
-path_log_file = rootdir + '\\armgcc_build_log.txt'
+path_log_file = rootdir + '\\armgcc_%s_build_log.txt' % sys.argv[1]
 f_final_log = open(path_log_file,'w')
 
 __output_log(log_member, f_final_log)

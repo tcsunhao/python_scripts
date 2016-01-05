@@ -44,7 +44,9 @@ def _run_command(cmd, filename_path, build_mode):
     print '%s %s -make %s -log info -parallel 4' % (cmd, filename_path, build_mode)
     sys.stdout.flush()
 
-    f_log = open('iar_tmp_log.txt', 'w')
+    iar_tmp_log_path = 'iar_%s_tmp_log.txt' % build_mode
+    print iar_tmp_log_path
+    f_log = open(iar_tmp_log_path, 'w')
     task = subprocess.Popen([cmd, filename_path, '-make', build_mode, '-log', 'info', '-parallel', '4'], 0, stdin=f_log, stdout=f_log, stderr=f_log, shell=True)
     ret = task.wait()
     f_log.close()
@@ -56,12 +58,12 @@ def _run_command(cmd, filename_path, build_mode):
     if ret != 0 :
         iar_fail_number += 1
         error_log_list.append(proj_name + ' build failed\n')
-        __error_log_filter('iar_tmp_log.txt', error_log_list)
+        __error_log_filter(iar_tmp_log_path, error_log_list)
         print 78*'X'
         print filename + ' ' + 'build failed' + '\n'
     # If the project build passed, find the warnings
     else : 
-        has_warning = __warning_log_filter('iar_tmp_log.txt', warning_log_list, proj_name)
+        has_warning = __warning_log_filter(iar_tmp_log_path, warning_log_list, proj_name)
         if has_warning == 1:
             iar_warning_number += 1
             print 78*'W'
@@ -71,7 +73,7 @@ def _run_command(cmd, filename_path, build_mode):
             print filename + ' ' + 'build pass without warnings' + '\n'
             pass_project_list.append(proj_name + '\n')
         
-    os.remove('iar_tmp_log.txt')
+    os.remove(iar_tmp_log_path)
 
 
 iar_bin_path = __search_iar()
@@ -87,7 +89,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
 log_member = (iar_pass_number, iar_warning_number, iar_fail_number, pass_project_list, warning_log_list, error_log_list, )
 
 # Create log file
-path_log_file = rootdir + '\\iar_build_log.txt'
+path_log_file = rootdir + '\\iar_%s_build_log.txt' % sys.argv[1]
 f_final_log = open(path_log_file,'w')
 
 __output_log(log_member, f_final_log)
