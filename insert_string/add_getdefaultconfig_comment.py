@@ -4,7 +4,6 @@
 import re,os,sys,time,subprocess,fnmatch
 
 rootdir = r"E:\git_sdk_2.0_release\mcu-sdk-2.0\boards\frdmk66f"
-# rootdir = r"E:\git_sdk_2.0_release\mcu-sdk-2.0\boards"
 
 tmp_comment_list = []
 tmp_comment_dic = {
