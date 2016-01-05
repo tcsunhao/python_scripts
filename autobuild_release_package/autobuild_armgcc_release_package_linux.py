@@ -32,37 +32,25 @@ for parent,dirnames,filenames in os.walk(rootdir):
                     break
             f_cmakelist.close()    
             
-            dirname_path = ('\\').join(filename_path.split('\\')[0:-1])
+            dirname_path = ('/').join(filename_path.split('/')[0:-1])
             os.chdir(dirname_path)
 
-            bat_file_path = dirname_path + '\\build_%s.bat' % (sys.argv[1])
-            # Remove the 'pause' in the bat file
-            newbat_file_path = dirname_path + '\\newbuild_%s.bat' % (sys.argv[1])
-            f_bat = open(bat_file_path,'r')
-            f_newbat = open(newbat_file_path,'w')
-            f_bat_data = f_bat.readlines()
-            for line in f_bat_data:
-                if 'pause' in line:
-                    continue
-                f_newbat.write(line)
-            f_bat.close()
-            f_newbat.close()
-
+            sh_file_path = dirname_path + '/build_%s.sh' % (sys.argv[1])
             # the release bat file need to add "build_log.txt"
             if sys.argv[1] == 'release':
-                f_newbat = open(newbat_file_path,'r')
-                file_content = f_newbat.read()
+                f_sh = open(sh_file_path,'r')
+                file_content = f_sh.read()
                 if file_content.find('build_log.txt') == -1:
                     file_content = file_content.strip('\n') + ' ' + '2> build_log.txt'
-                f_newbat.close()
-                f_newbat = open(newbat_file_path,'w')
-                f_newbat.write(file_content)
-                f_newbat.close()
-            
+                f_sh.close()
+                f_sh = open(sh_file_path,'w')
+                f_sh.write(file_content)
+                f_sh.close()
+                
             print proj_name + ' ' + 'build start: ' 
             sys.stdout.flush()
             
-            p = subprocess.Popen('newbuild_%s.bat' % sys.argv[1], stdin=None, stdout=None, stderr=None)
+            p = subprocess.Popen(['bash', sh_file_path], stdin=None, stdout=None, stderr=None)
             returncode = p.wait()
 
             if returncode != 0:
@@ -84,12 +72,11 @@ for parent,dirnames,filenames in os.walk(rootdir):
                     pass_project_list.append(proj_name + '\n')
                 
             # os.remove('build_log.txt')
-            os.remove(newbat_file_path)
 
 log_member = (armgcc_pass_number, armgcc_warning_number, armgcc_fail_number, pass_project_list, warning_log_list, error_log_list, )
 
 # Create log file
-path_log_file = rootdir + '\\armgcc_build_log.txt'
+path_log_file = rootdir + '/armgcc_build_log.txt'
 f_final_log = open(path_log_file,'w')
 
 __output_log(log_member, f_final_log)
