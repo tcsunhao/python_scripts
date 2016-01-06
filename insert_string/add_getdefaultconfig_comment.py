@@ -31,31 +31,47 @@ for parent,dirnames,filenames in os.walk(rootdir):
                 # find the 'GetDefaultConfig' line
                 if re.search(r'GetDefaultConfig', line) != None :
                     searchobj = re.search(r'\w*GetDefaultConfig', line)
-                    dic_key = searchobj.group(0)
-                    # Get the dic key value
-                    if comment_dic.has_key(dic_key) == True: 
-                        find_target = 1
-                        comment_string = comment_dic.get(dic_key, '')
-                        # print comment_string
-                        comment_list = comment_string.split('\n')
-                        # Add the '/*' and '*/' in the front and end
-                        comment_list.insert(0, first_line)
-                        comment_list.append(last_line)
-                        comment_list_len = len(comment_list)
-                        list_num = 1
-                        for mem in comment_list:
-                            if list_num == 1 or list_num == comment_list_len :
-                                pass
-                            else:
-                                mem = '     * ' + mem + '\n'
-                            list_num = list_num + 1
-                            pos = line_index - 1
-                            file_content_list.insert(pos, mem)
-                            line_index = line_index + 1
+                    
+                    if re.search(r'(&)(.*)(\));',line) != None:
+                        searchobj_configname = re.search(r'(&)(.*)(\));',line)
+                        # print searchobj_configname.group(2)
+                        dic_key = searchobj.group(0)
+                        # Get the dic key value
+                        if comment_dic.has_key(dic_key) == True: 
+                            find_target = 1
+                            comment_string = comment_dic.get(dic_key, '')
+                            # print comment_string
+                            comment_list = comment_string.split('\n')
+                            # Add the '/*' and '*/' in the front and end
+                            comment_list.insert(0, first_line)
+                            comment_list.append(last_line)
+                            comment_list_len = len(comment_list)
+                            list_num = 1
+                            for mem in comment_list:
+                                if list_num == 1 or list_num == comment_list_len :
+                                    pass
+                                else:
+                                    tmp = mem.split('->')
+                                    tmp[0] = searchobj_configname.group(2)
+                                    # print tmp
+                                    mem = ('->').join(tmp)
+                                    mem = '     * ' + mem + '\n'
+                                list_num = list_num + 1
+                                pos = line_index - 1
+                                file_content_list.insert(pos, mem)
+                                line_index = line_index + 1
+                        else:
+                            find_target = 0
+                            print 'Not found in the json file : ' + dic_key
+                            print filename_path
+                            print '\n'
                     else:
-                        find_target = 0
+                        print 78*'*'
+                        print 'Mismatch, cannot update the structurer variable name in the :'
                         print filename_path
-                        print 'wrong match : ' + dic_key + '\n'
+                        print 78*'*'
+
+
             # Close file
             f_handler.close() 
             
