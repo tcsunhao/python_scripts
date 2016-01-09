@@ -1,9 +1,10 @@
 # !/usr/bin/python
 # Filename : add_getdefaultconfig_comment.py
+# Note the \boards\src\demo_apps\mbedtls\mbedtls_benchmark\benchmark.c
 
 import re,os,sys,time,subprocess,fnmatch,json
 
-rootdir = r"E:\git_sdk_2.0_release\mcu-sdk-2.0\boards"
+rootdir = r"E:\git_sdk_2.0_feature_common\mcu-sdk-2.0\boards"
 
 comment_jason = file('default_config.json');
 comment_dic = json.load(comment_jason)
@@ -54,7 +55,7 @@ for parent,dirnames,filenames in os.walk(rootdir):
                                     tmp = mem.split('->')
                                     tmp[0] = searchobj_configname.group(2)
                                     # print tmp
-                                    mem = ('->').join(tmp)
+                                    mem = ('.').join(tmp)
                                     mem = '     * ' + mem + '\n'
                                 list_num = list_num + 1
                                 pos = line_index - 1

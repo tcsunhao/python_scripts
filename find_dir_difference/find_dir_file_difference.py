@@ -5,8 +5,8 @@
 
 import re,os,sys,time,subprocess,filecmp
 
-dir_a = 'E:\\sun_project\\python_test\\test0'
-dir_b = 'E:\\sun_project\\python_test\\test1'
+dir_a = r'E:\git_sdk_2.0_release\mcu-sdk-2.0\bin\auxtools'
+dir_b = r'E:\git_sdk_2.0_feature_common\mcu-sdk-2.0\bin\auxtools'
 
 is_same = True
 
