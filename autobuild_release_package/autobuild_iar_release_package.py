@@ -8,7 +8,7 @@ import re,os,sys,time,subprocess
 from log_filter import __warning_log_filter, __error_log_filter, __output_log
 
 # rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all2\boards\frdmk66f"
-rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all\boards\frdmk66f"
+rootdir = r"E:\tmp\SDK_2.0_MAPS-KS22_all_bdb4773\boards\mapsks22"
 
 iar_extension_name = '\\*.ewp'
 
