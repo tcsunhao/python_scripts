@@ -1,0 +1,160 @@
+dev_audio_generator_bm:
+
+dev_audio_generator_freertos:
+
+dev_audio_generator_lite_bm:
+
+dev_audio_speaker_bm:
+    FSL_FEATURE_SOC_I2S_COUNT
+
+dev_audio_speaker_freertos:
+    FSL_FEATURE_SOC_I2S_COUNT
+
+dev_audio_speaker_lite_bm:
+    FSL_FEATURE_SOC_I2S_COUNT
+
+dev_ccid_smart_card_bm:
+    FSL_FEATURE_SOC_EMVSIM_COUNT
+
+dev_ccid_smart_card_freertos:
+    FSL_FEATURE_SOC_EMVSIM_COUNT
+
+dev_ccid_smart_card_lite_bm:
+    FSL_FEATURE_SOC_EMVSIM_COUNT
+
+dev_cdc_vcom_bm:
+
+dev_cdc_vcom_freertos:
+
+dev_cdc_vcom_lite_bm:
+
+dev_composite_cdc_msc_bm:
+
+dev_composite_cdc_msc_freertos:
+
+dev_composite_cdc_msc_lite_bm:
+
+dev_composite_hid_audio_bm:
+
+dev_composite_hid_audio_freertos:
+
+dev_composite_hid_audio_lite_bm:
+
+dev_composite_hid_keyboard_hid_generic_bm:
+
+dev_composite_hid_keyboard_hid_generic_freertos:
+
+dev_composite_hid_keyboard_hid_generic_lite_bm:
+
+dev_composite_hid_mouse_hid_keyboard_bm:
+
+dev_composite_hid_mouse_hid_keyboard_freertos:
+
+dev_composite_hid_mouse_hid_keyboard_lite_bm:
+
+dev_hid_generic_bm:
+
+dev_hid_generic_freertos:
+
+dev_hid_generic_lite_bm:
+
+dev_hid_mouse_bm:
+
+dev_hid_mouse_freertos:
+
+dev_hid_mouse_lite_bm:
+
+dev_hid_mouse_ucosii:
+
+dev_hid_mouse_ucosiii:
+
+dev_msc_ramdisk_bm:
+
+dev_msc_ramdisk_freertos:
+
+dev_msc_ramdisk_lite_bm:
+
+dev_msc_sdcard_bm:
+    FSL_FEATURE_SOC_SDHC_COUNT
+
+dev_msc_sdcard_freertos:
+    FSL_FEATURE_SOC_SDHC_COUNT
+
+dev_msc_sdcard_lite_bm:
+    FSL_FEATURE_SOC_SDHC_COUNT
+
+dev_phdc_weighscale_bm:
+
+dev_phdc_weighscale_freertos:
+
+dev_phdc_weighscale_lite_bm:
+
+dev_video_flexio_ov7670_bm:
+    FSL_FEATURE_SOC_EDMA_COUNT
+    FSL_FEATURE_SOC_DMAMUX_COUNT
+    FSL_FEATURE_SOC_FLEXIO_COUNT
+
+dev_video_flexio_ov7670_freertos:
+    FSL_FEATURE_SOC_EDMA_COUNT
+    FSL_FEATURE_SOC_DMAMUX_COUNT
+    FSL_FEATURE_SOC_FLEXIO_COUNT
+
+dev_video_flexio_ov7670_lite_bm:
+    FSL_FEATURE_SOC_EDMA_COUNT
+    FSL_FEATURE_SOC_DMAMUX_COUNT
+    FSL_FEATURE_SOC_FLEXIO_COUNT
+
+dev_video_virtual_camera_bm:
+
+dev_video_virtual_camera_freertos:
+
+dev_video_virtual_camera_lite_bm:
+
+host_audio_speaker_bm:
+
+host_audio_speaker_freertos:
+
+host_cdc_bm:
+
+host_cdc_freertos:
+
+host_hid_generic_bm:
+
+host_hid_generic_freertos:
+
+host_hid_mouse_bm:
+
+host_hid_mouse_freertos:
+
+host_hid_mouse_keyboard_bm:
+
+host_hid_mouse_keyboard_freertos:
+
+host_hid_mouse_ucosii:
+
+host_hid_mouse_ucosiii:
+
+host_msd_command_bm:
+
+host_msd_command_freertos:
+
+host_msd_fatfs_bm:
+
+host_msd_fatfs_freertos:
+
+host_phdc_manager_bm:
+
+host_phdc_manager_freertos:
+
+keyboard2mouse_bm:
+    FSL_FEATURE_SOC_USBPHY_COUNT
+        
+keyboard2mouse_freertos:
+    FSL_FEATURE_SOC_USBPHY_COUNT
+
+pin_detect_hid_mouse_bm:
+    FSL_FEATURE_SOC_USBPHY_COUNT
+
+pin_detect_hid_mouse_freertos:
+    FSL_FEATURE_SOC_USBPHY_COUNT
+

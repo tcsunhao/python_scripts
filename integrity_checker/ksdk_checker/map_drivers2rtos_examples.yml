@@ -1,0 +1,129 @@
+freertos_dspi:
+    or:
+    and:
+        dspi
+        dspi_freertos
+
+freertos_event:
+    or:
+    and:
+
+freertos_generic:
+    or:
+    and:
+
+freertos_hello:
+    or:
+    and:
+        freertos_hello
+
+freertos_i2c:
+    or:
+    and:
+        i2c
+        i2c_freertos
+
+freertos_lpi2c:
+    or:
+    and:
+        lpi2c
+        lpi2c_freertos
+
+freertos_lpspi:
+    or:
+    and:
+        lpspi
+        lpspi_freertos
+
+freertos_lpuart:
+    or:
+    and:
+        lpuart_freertos
+
+freertos_mutex:
+    or:
+    and:
+
+freertos_queue:
+    or:
+    and:
+
+freertos_sem:
+    or:
+    and:
+
+freertos_spi:
+    or:
+    and:
+        spi
+        spi_freertos
+
+freertos_swtimer:
+    or:
+    and:
+
+freertos_tickless:
+    or:
+    and:
+        freertos_tickless
+        lptmr
+
+freertos_uart:
+    or:
+    and:
+        uart_freertos
+        
+ucosii_dspi:
+    or:
+    and:
+        dspi
+        ucosii_dspi
+
+ucosii_hello:
+    or:
+    and:
+
+ucosii_lpi2c:
+    or:
+    and:
+        lpi2c
+
+ucosii_lpuart:
+    or:
+    and:
+        lpuart
+        lpuart_ucosii
+
+ucosii_uart:
+    or:
+    and:
+        uart
+        uart_ucosii
+
+ucosiii_dspi:
+    or:
+    and:
+        dspi
+        ucosiii_dspi
+
+ucosiii_hello:
+    or:
+    and:
+
+ucosiii_lpi2c:
+    or:
+    and:
+        lpi2c
+
+ucosiii_lpuart:
+    or:
+    and:
+        lpuart
+        lpuart_ucosiii
+
+ucosiii_uart:
+    or:
+    and:
+        uart
+        uart_ucosiii
+        

@@ -1,0 +1,209 @@
+adc_low_power:
+    or:
+    and:
+        adc16
+        lptmr
+        pmc
+
+adc_potentiometer:
+    or:
+    and:
+        adc16
+        lptmr
+
+bubble:
+    or:
+    and:
+        smc
+
+dac_adc:
+    or:
+    and:
+        adc16
+        dac
+
+dac_speaker:
+    or:
+    and:
+        dac
+
+dspi_lcd:
+    or:
+    and:
+        dspi
+
+ecompass:
+    or:
+    and:
+        i2c
+
+eeprom:
+    or:
+    and:
+        lpi2c
+
+emvl1:
+    or:
+        smartcard_emvsim
+        smartcard_phy_emvsim
+        smartcard_phy_gpio
+        smartcard_phy_ncn8025
+        smartcard_uart
+    and:
+
+emvl1_freertos:
+    or:
+        smartcard_emvsim
+        smartcard_phy_emvsim
+        smartcard_phy_gpio
+        smartcard_phy_ncn8025
+        smartcard_uart
+    and:
+
+ftm_pdb_adc:
+    or:
+    and:
+        adc16
+        ftm
+        lptmr
+        pdb
+        pmc
+
+hello_world:
+    or:
+    and:
+
+hello_world_core0:
+    or:
+    and:
+        mu
+
+hello_world_core1:
+    or:
+    and:
+        mu
+
+hello_world_qspi:
+    or:
+    and:
+        qspi
+
+hello_world_qspi_alias:
+    or:
+    and:
+        qspi
+
+lwip_httpsrv_bm:
+    or:
+    and:
+        enet
+        pit
+
+lwip_httpsrv_freertos:
+    or:
+    and:
+        enet
+
+lwip_httpssrv_wolfssl_freertos:
+    or:
+    and:
+        enet
+
+lwip_ping_bm:
+    or:
+    and:
+        enet
+        pit
+
+lwip_ping_freertos:
+    or:
+    and:
+        enet
+
+lwip_tcpecho_bm:
+    or:
+    and:
+        enet
+        pit
+
+lwip_tcpecho_freertos:
+    or:
+    and:
+        enet
+
+lwip_udpecho_bm:
+    or:
+    and:
+        enet
+        pit
+
+lwip_udpecho_freertos:
+    or:
+    and:
+        enet
+
+mbedtls_benchmark:
+    or:
+    and:
+        ltc
+        pit
+
+mbedtls_selftest:
+    or:
+    and:
+        ltc
+
+power_manager:
+    or:
+    and:
+        llwu
+        lptmr
+        pmc
+        rcm
+        smc
+
+power_mode_switch:
+    or:
+    and:
+        llwu
+        lptmr
+        pmc
+        rcm
+        smc
+
+rtc_func:
+    or:
+    and:
+        rtc
+
+sai:
+    or:
+    and:
+        dmamux
+        edma
+        sai
+        sai_edma
+
+slcd_guessnum:
+    or:
+    and:
+        rnga
+        slcd
+
+spi_flash:
+    or:
+    and:
+        dspi
+
+wolfssl_benchmark:
+    or:
+        mmcau
+        ltc
+    and:
+
+wolfssl_selftest:
+    or:
+        mmcau
+        ltc    
+    and:
+
