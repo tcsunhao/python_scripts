@@ -42,31 +42,32 @@ import re, os, sys, time, subprocess, fnmatch, json, yaml
 # items = example_driver_dic.items()
 # items.sort()
 
-f = file('all_usb.yml','r')
-yf = yaml.load(f)
-f.close()
+# f = file('all_usb.yml','r')
+# yf = yaml.load(f)
+# f.close()
 
-proj_list = []
-raw_proj_list = yf['__load__']
+# proj_list = []
+# raw_proj_list = yf['__load__']
 
-for mem in raw_proj_list:
-    proj_list.append(mem.split('\\')[-1].split('.')[0])
+# for mem in raw_proj_list:
+#     proj_list.append(mem.split('\\')[-1].split('.')[0])
 
-proj_list.sort()
+# proj_list.sort()
 
-f = open('map_features2usb_examples.yml','w')
+# f = open('map_features2usb_examples.yml','w')
 
-for mem in proj_list:
-    print >> f, mem + ':'
-    print >> f, '    and:'
-    print >> f, '\n',
+# for mem in proj_list:
+#     print >> f, mem + ':'
+#     print >> f, '    and:'
+#     print >> f, '\n',
 
-f.close()
+# f.close()
 
 #### Output the yml
-# f = file('newdata.yaml','w')
-# yaml.dump(example_driver_dic,f)
-# f.close()
+data = {'Swaroop' : 'swaroopch@byteofpython.info', 'Larry' : 'larry@wall.org', 'Matsumoto' : 'matz@ruby-lang.org', 'Spammer' : 'spammer@hotmail.com'}
+f = open ('test.yml','w')
+yaml.dump(data,f)
+f.close()
 
 ###############################
 ### read and write excel

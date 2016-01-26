@@ -1,29 +1,35 @@
 #!/usr/bin/python
 #Filename : autobuild_iar_release_package.py
 #command line example:
-#   python autobuild_iar_release_package.py debug 
-#   python autobuild_iar_release_package.py release 
-#   python autobuild_iar_release_package.py all
+#   python autobuild_iar_release_package.py -n build1 -m debug 
+#   python autobuild_iar_release_package.py -n build1 -m release 
+#   python autobuild_iar_release_package.py -n build1 -m all
 
-import re,os,sys,time,subprocess
-from aux_tool import ProgressBar, __get_projects_num, __warning_log_filter, __error_log_filter, __read_options,__output_log
+import re,os,sys,time,subprocess, yaml, shutil
+from aux_tool import ProgressBar, __warning_log_filter, __error_log_filter, __read_options,__output_log
 
 # rootdir = r"E:\tmp\rc1\SDK_2.0_FRDM-K66F_all2\boards\frdmk66f"
-rootdir = r"E:\tmp\SDK_2.0_FRDM-K82F_all_nda_3f09dc9\boards\frdmk82f\demo_apps"
+rootdir = r"E:\tmp\SDK_2.0_MAPS-KS22_all_bdb4773\boards\mapsks22"
 
 iar_extension_name = '\\*.ewp'
 
-iar_pass_number = 0
-iar_warning_number = 0
-iar_fail_number = 0
+projectbuild_pass_number = 0
+projectbuild_warning_number = 0
+projectbuild_fail_number = 0
 
-pass_project_list = []
-warning_log_list = []
-error_log_list = []
+iar_log_dic = {}
 
 proj_num = 0
+proj_built_num = 0
 build_mode = 'Debug'
-i = 0
+progressbar_counter = 0
+identify_string = ''
+
+file_proj_num_statistics = 'proj_num_statistics.yml'
+file_pass_withoutwarning = 'proj_pass_without_warning.txt'
+file_pass_withwarning = 'proj_pass_with_warning.txt'
+file_fail = 'proj_fail.txt'
+
 # Find iarBuild.exe path in system
 def __search_iar():
     try:
@@ -38,14 +44,23 @@ def __search_iar():
 
         return iarBuildPath
 
-def _run_command(cmd, filename_path, build_mode):
-    global iar_pass_number
-    global iar_fail_number
-    global iar_warning_number
-    global has_warning
-    global first_warning
+def __get_projects_num(rootdir):
+    proj_num = 0
     
-    # Get project name from file path
+    for parent,dirnames,filenames in os.walk(rootdir):
+        for filename in filenames:
+            filename_path = os.path.join(parent,filename)
+            if re.search(r'\.ewp',filename_path):
+                proj_num = proj_num + 1
+
+    return proj_num
+
+def _run_command(cmd, filename_path, build_mode):
+    global projectbuild_pass_number
+    global projectbuild_fail_number
+    global projectbuild_warning_number
+    has_warning = 0
+    first_warning = 0
 
     if build_mode == 'Debug':
         proj_name = filename_path.split('\\')[-1] + ' ' + build_mode
@@ -61,27 +76,30 @@ def _run_command(cmd, filename_path, build_mode):
         
         # If the project build failed
         if debug_ret != 0 :
-            iar_fail_number += 1
-            error_log_list.append(proj_name + ' build failed\n')
-            __error_log_filter(iar_debug_tmp_log_path, error_log_list)
+            projectbuild_fail_number += 1
+            iar_log_dic['projectbuild_fail_number'] = projectbuild_fail_number
+            __error_log_filter(iar_debug_tmp_log_path, file_fail, proj_name)
             print 78*'X'
             print proj_name + ' ' + 'build failed' + '\n'
         # If the project build passed, find the warnings
         else : 
-            has_warning = __warning_log_filter(iar_debug_tmp_log_path, warning_log_list, proj_name)
+            has_warning = __warning_log_filter(iar_debug_tmp_log_path, file_pass_withwarning, proj_name)
             if has_warning == 1:
-                iar_warning_number += 1
+                projectbuild_warning_number += 1
+                iar_log_dic['projectbuild_warning_number'] = projectbuild_warning_number
                 print 78*'W'
                 print proj_name + ' ' + 'build pass with warnings' + '\n'
             else:
-                iar_pass_number += 1
+                projectbuild_pass_number += 1
+                iar_log_dic['projectbuild_pass_number'] = projectbuild_pass_number
                 print proj_name + ' ' + 'build pass without warnings' + '\n'
-                pass_project_list.append(proj_name + '\n')
-            
-        os.remove(iar_debug_tmp_log_path)
+                f_file_pass_withoutwarning = open(file_pass_withoutwarning, 'a')
+                f_file_pass_withoutwarning.write(proj_name + '\n')
+                f_file_pass_withoutwarning.close()
 
+        os.remove(iar_debug_tmp_log_path)
+    
     elif build_mode == 'Release':
-        
         proj_name = filename_path.split('\\')[-1] + ' ' + build_mode
         
         print '%s %s make %s' % (cmd, filename_path, build_mode)
@@ -95,25 +113,29 @@ def _run_command(cmd, filename_path, build_mode):
         
         # If the project build failed
         if release_ret != 0 :
-            iar_fail_number += 1
-            error_log_list.append(proj_name + ' build failed\n')
-            __error_log_filter(iar_release_tmp_log_path, error_log_list)
+            projectbuild_fail_number += 1
+            iar_log_dic['projectbuild_fail_number'] = projectbuild_fail_number
+            __error_log_filter(iar_release_tmp_log_path, file_fail, proj_name)
             print 78*'X'
             print proj_name + ' ' + 'build failed' + '\n'
         # If the project build passed, find the warnings
         else : 
-            has_warning = __warning_log_filter(iar_release_tmp_log_path, warning_log_list, proj_name)
+            has_warning = __warning_log_filter(iar_release_tmp_log_path, file_pass_withwarning, proj_name)
             if has_warning == 1:
-                iar_warning_number += 1
+                projectbuild_warning_number += 1
+                iar_log_dic['projectbuild_warning_number'] = projectbuild_warning_number
                 print 78*'W'
                 print proj_name + ' ' + 'build pass with warnings' + '\n'
             else:
-                iar_pass_number += 1
+                projectbuild_pass_number += 1
+                iar_log_dic['projectbuild_pass_number'] = projectbuild_pass_number
                 print proj_name + ' ' + 'build pass without warnings' + '\n'
-                pass_project_list.append(proj_name + '\n')
-            
+                f_file_pass_withoutwarning = open(file_pass_withoutwarning, 'a')
+                f_file_pass_withoutwarning.write(proj_name + '\n')
+                f_file_pass_withoutwarning.close()
+        
         os.remove(iar_release_tmp_log_path)
-
+    
     elif build_mode == 'All':
         
         print '%s %s make %s' % (cmd, filename_path, build_mode)
@@ -134,52 +156,67 @@ def _run_command(cmd, filename_path, build_mode):
         f_release_log.close()
         f_debug_log.close()
         
-        # If the project build failed
+        # If the debug project build failed
         if debug_ret != 0 :
             proj_name = filename_path.split('\\')[-1] + ' ' + 'debug'
-            iar_fail_number += 1
-            error_log_list.append(proj_name + ' ' + 'build failed\n')
-            __error_log_filter(iar_debug_tmp_log_path, error_log_list)
+            projectbuild_fail_number += 1
+            iar_log_dic['projectbuild_fail_number'] = projectbuild_fail_number
+            __error_log_filter(iar_debug_tmp_log_path, file_fail, proj_name)
             print 78*'X'
             print proj_name + ' ' + 'build failed' + '\n'
         # If the project build passed, find the warnings
         else : 
             proj_name = filename_path.split('\\')[-1] + ' ' + 'debug'
-            has_warning = __warning_log_filter(iar_debug_tmp_log_path, warning_log_list, proj_name)
+            has_warning = __warning_log_filter(iar_debug_tmp_log_path, file_pass_withwarning, proj_name)
             if has_warning == 1:
-                iar_warning_number += 1
+                projectbuild_warning_number += 1
+                iar_log_dic['projectbuild_warning_number'] = projectbuild_warning_number
                 print 78*'W'
                 print proj_name + ' ' + 'build pass with warnings' + '\n'
             else:
-                iar_pass_number += 1
+                projectbuild_pass_number += 1
+                iar_log_dic['projectbuild_pass_number'] = projectbuild_pass_number
                 print proj_name + ' ' + 'build pass without warnings' + '\n'
-                pass_project_list.append(proj_name + '\n')        
+                f_file_pass_withoutwarning = open(file_pass_withoutwarning, 'a')
+                f_file_pass_withoutwarning.write(proj_name + '\n')
+                f_file_pass_withoutwarning.close()        
         
         # If the project build failed
         if release_ret != 0 :
             proj_name = filename_path.split('\\')[-1] + ' ' + 'release'
-            iar_fail_number += 1
-            error_log_list.append(proj_name + ' build failed\n')
-            __error_log_filter(iar_release_tmp_log_path, error_log_list)
+            projectbuild_fail_number += 1
+            iar_log_dic['projectbuild_fail_number'] = projectbuild_fail_number
+            __error_log_filter(iar_release_tmp_log_path, file_fail, proj_name)
             print 78*'X'
             print proj_name + ' ' + 'build failed' + '\n'
         # If the project build passed, find the warnings
         else : 
             proj_name = filename_path.split('\\')[-1] + ' ' + 'release'
-            has_warning = __warning_log_filter(iar_release_tmp_log_path, warning_log_list, proj_name)
+            has_warning = __warning_log_filter(iar_release_tmp_log_path, file_pass_withwarning, proj_name)
             if has_warning == 1:
-                iar_warning_number += 1
+                projectbuild_warning_number += 1
+                iar_log_dic['projectbuild_warning_number'] = projectbuild_warning_number
                 print 78*'W'
                 print proj_name + ' ' + 'build pass with warnings' + '\n'
             else:
-                iar_pass_number += 1
+                projectbuild_pass_number += 1
+                iar_log_dic['projectbuild_pass_number'] = projectbuild_pass_number
                 print proj_name + ' ' + 'build pass without warnings' + '\n'
-                pass_project_list.append(proj_name + '\n')
+                f_file_pass_withoutwarning = open(file_pass_withoutwarning, 'a')
+                f_file_pass_withoutwarning.write(proj_name + '\n')
+                f_file_pass_withoutwarning.close()
             
         os.remove(iar_release_tmp_log_path)
-        os.remove(iar_debug_tmp_log_path)
+        os.remove(iar_debug_tmp_log_path)        
+    
+    # Update the file_proj_num_statistics
+    f = open(file_proj_num_statistics,'w')
+    yaml.dump(iar_log_dic, f)
+    f.close()
+
 
 if __name__ == '__main__':
+    has_build = 0
 
     # Gets IAR bin path
     iar_bin_path = __search_iar()
@@ -187,7 +224,37 @@ if __name__ == '__main__':
     # Gets the command line args
     the_args = __read_options()
     
-    # Uniform the mode case
+    # Reads the build name for this time
+    if the_args.buildname == None:
+        print 'You need give a name for this build, the name can distinguish itself from next time build, such as python autobuild_iar_release_package -n frdmkxx -m debug'
+        sys.exit()
+    else:
+        pass
+
+    log_file_path_record = os.getcwd()
+    log_file_path = os.getcwd() + '\\%s\\%s'% (the_args.buildname, 'iar') 
+    # Checks wether the log_file_path already exists
+    if os.path.exists(log_file_path):
+        os.chdir(log_file_path)
+        if os.path.exists(log_file_path + '\\%s' % file_proj_num_statistics):
+            f = open(file_proj_num_statistics, 'r')
+            iar_log_dic_tmp = yaml.load(f)
+            if iar_log_dic_tmp:
+                iar_log_dic = iar_log_dic_tmp.copy()
+                if iar_log_dic.has_key('projectbuild_pass_number'):
+                    projectbuild_pass_number = projectbuild_pass_number + iar_log_dic['projectbuild_pass_number']
+                if iar_log_dic.has_key('projectbuild_warning_number'):
+                    projectbuild_warning_number = projectbuild_warning_number + iar_log_dic['projectbuild_warning_number']
+                if iar_log_dic.has_key('projectbuild_fail_number'):
+                    projectbuild_fail_number = projectbuild_fail_number + iar_log_dic['projectbuild_fail_number']
+                if iar_log_dic.has_key('progressbar_counter'):
+                    progressbar_counter = progressbar_counter + iar_log_dic['progressbar_counter']
+            f.close()          
+    else:
+        os.makedirs(log_file_path)
+        os.chdir(log_file_path)
+
+    # Uniforms the mode case
     if re.search(r'debug',the_args.mode,re.I):
         build_mode = 'Debug'
     elif re.search(r'release',the_args.mode,re.I):
@@ -196,28 +263,54 @@ if __name__ == '__main__':
         build_mode = 'All'
 
     proj_num = __get_projects_num(rootdir)
-    
+    identify_string = the_args.buildname + the_args.mode
+
     pb = ProgressBar(proj_num)
     # Starts the program
     for parent,dirnames,filenames in os.walk(rootdir):
         for filename in filenames:
             filename_path = os.path.join(parent,filename)
             if re.search(r'\.ewp',filename_path):
-                _run_command(iar_bin_path, filename_path, build_mode)
-                i = i + 1
-                print pb(i)
-                sys.stdout.flush()
+                path_whetherbuild = ('\\').join(filename_path.split('\\')[0:-1]) + '\\' + 'whetherbuild_%s' % the_args.mode
+                if os.path.exists(path_whetherbuild) == True:
+                    f = open(path_whetherbuild, 'r')
+                    if f.read().find(identify_string) != -1:
+                        has_build = 1
+                        proj_built_num = proj_built_num + 1
+                    f.close()
+                    if (proj_built_num == proj_num) : 
+                        print 'All projects in the build %s_%s have been built before.' % (the_args.buildname, the_args.mode)
+                        sys.exit()
+                else:
+                    has_build = 0
 
+                if has_build == 0:
+                    f = open(path_whetherbuild, 'w')
+                    f.close()
+                    
+                    _run_command(iar_bin_path, filename_path, build_mode)
+                    
+                    progressbar_counter = progressbar_counter + 1
+                    print pb(progressbar_counter)
+                    sys.stdout.flush()
+                    iar_log_dic['progressbar_counter'] = progressbar_counter
+                    # Update the file_proj_num_statistics
+                    f = open(file_proj_num_statistics,'w')
+                    yaml.dump(iar_log_dic, f)
+                    f.close()
+                    
+                    f = open(path_whetherbuild, 'w')
+                    f.write(identify_string)
+                    f.close()
+                else:
+                    has_build = 0
 
-    log_member = (iar_pass_number, iar_warning_number, iar_fail_number, pass_project_list, warning_log_list, error_log_list, )
-
-    # Creates log file
-    path_log_file = rootdir + '\\iar_%s_build_log.txt' % build_mode
-    f_final_log = open(path_log_file,'w')
-
-    __output_log(log_member, f_final_log)
-
-    f_final_log.close()
+    # Output the log
+    path_log_file = log_file_path_record + '\\%s\\iar_%s_build_log.txt' % (the_args.buildname, build_mode)
+    __output_log(iar_log_dic, file_pass_withoutwarning, file_pass_withwarning, file_fail, path_log_file)
+    # Returns to the up dir 
+    os.chdir(log_file_path_record)
+    shutil.rmtree(log_file_path)  
 
     print 78*'*'
     print 78*'*'
