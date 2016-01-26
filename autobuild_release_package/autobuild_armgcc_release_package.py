@@ -51,6 +51,11 @@ if __name__ == '__main__':
     else:
         pass
 
+    if the_args.rootdir == None:
+        pass
+    else:
+        rootdir = the_args.rootdir        
+
     log_file_path_record = os.getcwd()
     log_file_path = os.getcwd() + '\\%s\\%s'% (the_args.buildname, 'armgcc') 
     

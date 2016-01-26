@@ -69,6 +69,7 @@ def __read_options():
     # Options
     parser.add_argument('-n', '--buildname', help='The build name. A build name is needed for every build to distinguish itself from others')
     parser.add_argument('-m', '--mode', default=None, help='The build mode, debug, release, all')
+    parser.add_argument('-r', '--rootdir', default=None, help="The root director path which contains the projects need to be built. If you have edit the 'rootdir' in the py file, you don\'t need to concern it in the command line.")
 
     return parser.parse_args()
 
