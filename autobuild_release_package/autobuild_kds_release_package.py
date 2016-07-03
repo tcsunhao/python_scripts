@@ -9,7 +9,7 @@ import re,os,sys,time,subprocess,shutil,yaml
 import xml.dom.minidom
 from aux_tool import ProgressBar, __warning_log_filter, __error_log_filter, __read_options,__output_log
 
-rootdir = r"E:\tmp\SDK_2.0_MAPS-KS22_all_bdb4773\boards\mapsks22"
+rootdir = r"E:\tmp\SDK_2.0_FRDM-KL28Z_all_nda_75cb2bf\boards\frdmkl28z"
 
 projectbuild_pass_number = 0
 projectbuild_warning_number = 0
@@ -262,6 +262,9 @@ if __name__ == '__main__':
     else:
         rootdir = the_args.rootdir        
 
+    if os.path.isdir('./.metadata'):
+        shutil.rmtree('./.metadata')
+
     log_file_path_record = os.getcwd()
     log_file_path = os.getcwd() + '\\%s\\%s'% (the_args.buildname, 'kds') 
     # Checks wether the log_file_path already exists
@@ -344,8 +347,6 @@ if __name__ == '__main__':
                     else:
                         has_build = 0
 
-    if os.path.isdir('./.metadata'):
-        shutil.rmtree('./.metadata')
 
     # Output the log
     path_log_file = log_file_path_record + '\\%s\\kds_%s_build_log.txt' % (the_args.buildname, build_mode)

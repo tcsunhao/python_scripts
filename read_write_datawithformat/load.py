@@ -2,6 +2,32 @@
 # Filename : load.py
 
 import re, os, sys, time, subprocess, fnmatch, json, yaml
+import  xml.dom.minidom
+
+############################
+## The typical way to load a xml file
+# dom = xml.dom.minidom.parse('fsl_gpio.meta')
+dom = xml.dom.minidom.parse('MK64F12_device.meta')
+
+root = dom.documentElement
+tag_devices = root.getElementsByTagName('devices')
+tag_device = root.getElementsByTagName('device')
+for device in tag_device:
+    if device.getElementsByTagName('part') != None:
+        tag_part = device.getElementsByTagName('part')
+        for part in tag_part:
+            print part.getAttribute('name')
+# tag_components = root.getElementsByTagName("components")
+# tag_component = root.getElementsByTagName('component')
+# for component in tag_component:
+#    # print "*****Movie*****"
+#    # if movie.hasAttribute("title"):
+#    #     print "Title: %s" % movie.getAttribute("title")
+#     if component.hasAttribute('description'):
+#         pass
+#     else:
+#         print component.getAttribute('requires')
+
 
 ############################
 ## The typical way to load a json file

@@ -1,9 +1,14 @@
 @echo off
 
-set BUILD_NAME_THIS_TIME=build_1
+REM Give a name for this build, it's a must option
+set BUILD_NAME_THIS_TIME=buildnamey
+
+REM The build mode : debug, release, all
 set BUILD_MODE=release
-set BUILD_PATH="E:\tmp\SDK_2.0_FRDM-K82F_all_nda_3f09dc9\boards\frdmk82f"
- 
+
+REM The dir which contains all your projects, better to the "\boards" level
+set BUILD_PATH="E:\tmp\SDK_2.0_FRDM-K82F_all_nda_3f09dc9\boards"
+
 if "%1"=="keil" goto keil
 if "%1"=="kds" goto kds
 if "%1"=="atl" goto atl
@@ -35,3 +40,4 @@ exit
 :armgcc
 python autobuild_armgcc_release_package.py -n %BUILD_NAME_THIS_TIME% -m %BUILD_MODE% -r %BUILD_PATH%
 pause>nul
+exit

@@ -1,0 +1,51 @@
+========================================================================
+
+                            SDK-REPORTER
+
+I. Introduction
+================
+
+The sdk-reporter generates 3 reports for mcu-sdk-2.0 repository:
+  - Estimation report:
+    + List of drivers which are out-of-date and should be updated to support
+    new IP.
+    + List of demos/examples should be ported for a new device.
+  - Status report: current status of drivers/demos/examples.
+  - Checklist report:
+    + Provide information of socs/part numbers/boards.
+    + List supported drivers/demos/examples.
+These reports are used in 3 phases of NPI:
+  - Estimation report: estimate what should be ported by NPI team for new socs.
+  - Status report: status of drivers/demos/examples during NPI team is
+    porting.
+  - Checklist report: final report provides what was done by NPI team and
+    this report could be an additional checklist for test team.
+
+II. How to use
+====================
+Command: python sdk_reporter.py [-h] [-type {checklist,estimation,status}]
+                       [-soc SOC [SOC ...]] [-report REPORT]
+
+optional arguments:
+  -h, --help            show help message and exit
+  -type {checklist,estimation,status}
+                        Report type: estimation|status|checklist
+  -soc SOC [SOC ...]    List of soc
+  -report REPORT        Name of report file
+
+Eg:
+  - Estimation report:
+    python sdk_reporter.py -type estimation -soc MKW31Z4 MKW40Z4 MKW41Z4
+  - Status report:
+    python sdk_reporter.py -type status -report status.xlsx
+  - Checklist report:
+    python sdk_reporter.py -type checklist -soc MKL81Z7 MKL82Z7
+
+III. How it works
+=================
+The sdk-reporter tool summarizes information of data in yaml files from generator,
+feature header files and meta files then create report files in excel form.
+
+Note:
+Please contact Anh Tuan Nguyen (anhtuan.nguyen@nxp.com) for help.
+Thanks for your advices.

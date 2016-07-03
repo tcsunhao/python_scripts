@@ -8,7 +8,7 @@
 import re,os,sys,time,subprocess, yaml, shutil
 from aux_tool import ProgressBar, __warning_log_filter, __error_log_filter, __read_options,__output_log
 
-rootdir = r"E:\tmp\SDK_2.0_FRDM-K82F_all_nda_3f09dc9\boards\frdmk82f"
+rootdir = r"E:\tmp\SDK_2.0_FRDM-KL28Z_all_nda_75cb2bf\boards\frdmkl28z"
 
 keil_extension_name = '\\*.uvprojx'
 

@@ -1,14 +1,14 @@
 #!/ usr / bin / python
 #Filename : autobuild_armgcc_release_package.py
 #command line example:
-# python autobuild_armgcc_release_package.py -n frdmk82f -m debug
-# python autobuild_armgcc_release_package.py -n frdmk82f -m release
-# python autobuild_armgcc_release_package.py -n frdmk82f -m all
+# python autobuild_armgcc_release_package.py -n mapsks22 -m debug
+# python autobuild_armgcc_release_package.py -n mapsks22 -m release
+# python autobuild_armgcc_release_package.py -n mapsks22 -m all
 
 import re,os,sys,time,subprocess, yaml, shutil
 from aux_tool import ProgressBar, __warning_log_filter, __error_log_filter, __read_options,__output_log
 
-rootdir = r"E:\tmp\SDK_2.0_MAPS-KS22_all_bdb4773\boards\mapsks22"
+rootdir = r"E:\tmp\SDK_2.0_FRDM-KL28Z_all_nda_75cb2bf\boards\frdmkl28z"
 
 projectbuild_pass_number = 0
 projectbuild_warning_number = 0
