@@ -5,10 +5,12 @@ require "yaml"
 require "find"
 
 file = "E:\\sun_project\\python_scripts\\ruby\\xml"
-istring = "Holt"
+istring0 = "HoltSun"
+istring1 = "Holt"
 
 begin
-    puts istring.split('_')[0]
+    istring = istring1 - istring0
+    puts istring
     # Find.find(file) do |filename|
     #     if File.file?(filename) && File.extname(filename) == ".meta"
     #         puts filename
