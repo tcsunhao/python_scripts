@@ -7,10 +7,10 @@ require "fileutils"
 require 'optparse'
 
 class ExampleXmlPreautotest
-    def initialize(sdk_board, release_package_path)
+    def initialize()
         @sdk2_repo_path = "E:/git_sdk_2.0_rel/mcu-sdk-2.0"
-        @release_package_path = release_package_path
-        @sdk_board = sdk_board
+        @release_package_path = ""
+        @sdk_board = ""
         @option = ""
     end
 
@@ -74,9 +74,9 @@ class ExampleXmlPreautotest
 
     def process_cmdargs()
         opt_parser = OptionParser.new do | opts |
-            # opts.on("-c", "--copy", String, "Copy the example.xml file") do | value |
-            #     @option = "copyxml"
-            # end
+            opts.on("-b", "--board", "The sdk board name, like twrkv58f220m") do | value |
+                @option = "copyxml"
+            end  
             opts.on("-c", "--copy", "Copy the example.xml file") do | value |
                 @option = "copyxml"
             end            
@@ -87,10 +87,10 @@ class ExampleXmlPreautotest
                 @option = "checkxml"
             end
             opts.on("-r", "--release package path", String, "Release package path") do | value |
-                @release_package_path = value
+                @release_package_path = value.gsub(/\\/,"/")
             end
             opts.on("-s", "--sdk repo path",String, "Sdk2.0 git repo path") do | value |
-                @sdk2_repo_path = value
+                @sdk2_repo_path = value.gsub(/\\/,"/")
             end            
             opts.on("-h", "--help", "print this help") do
                 puts(opts)
@@ -103,7 +103,7 @@ class ExampleXmlPreautotest
 end
 
 if __FILE__ == $0
-    obj = ExampleXmlPreautotest.new("twrkv58f220m","C:/nxp/SDK_2.0_TWR-KV58F220M")
+    obj = ExampleXmlPreautotest.new()
     obj.all_example_xml_action()
 end
 

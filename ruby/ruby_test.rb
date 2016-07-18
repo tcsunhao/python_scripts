@@ -5,12 +5,18 @@ require "yaml"
 require "find"
 
 file = "E:\\sun_project\\python_scripts\\ruby\\xml"
-istring0 = "HoltSun"
-istring1 = "Holt"
+tool = "iar"
+istring1 = ["IAR", "GCC", "ARM"]
 
 begin
-    istring = istring1 - istring0
-    puts istring
+    istring1.each do |each|
+       each.downcase!
+    end
+
+    puts istring1.inspect
+    # if tool == ("iar" or "gcc" or "arm")
+    #     puts tool
+    # end
     # Find.find(file) do |filename|
     #     if File.file?(filename) && File.extname(filename) == ".meta"
     #         puts filename
