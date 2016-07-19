@@ -11,7 +11,7 @@ file_tmp_path = "tmp1.c"
 begin
     File.open("tmp1.c", "r") do |file|
         puts file.class
-        file.each do |v|
+        file.each_line do |v|
             puts v
         end
     end
@@ -30,6 +30,9 @@ end
 # File.extname(f)
 # Dir.chdir("/usr/bin")
 # 
+# 
+# 输出文件完整绝对路径
+# puts Pathname.new(file_path).realpath
 
 # 输出文件
 # File.open("tmp1.c", "r") do |file|

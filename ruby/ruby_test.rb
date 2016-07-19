@@ -4,32 +4,36 @@
 require "yaml"
 require "find"
 require "optparse"
+require "pathname"
+require 'set'
 
-
-file = "E:\\sun_project\\python_scripts\\ruby\\xml"
+dir = "E:\\sun_project\\python_scripts\\ruby"
 tool = "iar"
 istring1 = ["IAR", "GCC", "ARM"]
+file_path = "ruby_xml.rb"
 
+
+path0 = "boards/twrkl82z72m/demo_apps/hello_world_qspi/startup/iar/startup_MKL82Z7.s"
+path1 = "boards/twrkl82z72m/demo_apps/hello_world_qspi/startup/system_MKL82Z7.h"
+path2 = "boards/twrkl82z72m/demo_apps/hello_world_qspi/startup/system_MKL82Z7.c"
+
+board = "twrkl82z72m"
 
 if __FILE__ == $0
-    options = {}
-    option_parser = OptionParser.new do |opts|
-        opts.banner = "Here is the help message for the command line tool."
-        options[:switch] = false
-        
-        opts.on('-s', '--switch', 'Set options as switch') do |value|
-            options[:switch] = true
-        end
-
-        opts.on('-n', '--name Name', 'Pass-in single name') do |value|
-            options[:name] = value
-        end
-
-        opts.on('-a', '--array A,B', Array, 'List of arguments') do |value|
-            options[:array] = value
-        end
+    puts File.dirname(path0)
+    case File.dirname(path0)
+    when /^\/?boards\/#{board}\/(\w*)\/\w*\/startup$/
+        puts $1
+        puts 'startup'  
+    when /^\/?boards\/#{board}\/(\w*)\/(\w*)\/startup\/(?<devices_subfolder>iar|arm|gcc)/
+        # puts $1
+        # puts $2
+        puts $~[:devices_subfolder]       
+    when /^\/?(rtos|middleware)\/(?<prefix>\w*)_(\w|\.)*(\/(?<relpath>.*))?/
     end
-    option_parser.parse!
-    puts options.inspect   
-    puts options[:array][0]
+    # 
+    # array_a = ["example"]
+    # array_b = ["readme"]
+    # array_c = array_a + array_b
+    # puts array_c.inspect    
 end

@@ -3,8 +3,8 @@
 
 require "yaml"
 
-# file_path = "E:\\git_sdk_2.0_feature_common_generator\\mcu-sdk-2.0\\bin\\generator\\records\\ksdk\\sdk_example\\common\\demo_app.yml"
-file_path = "E:\\git_sdk_2.0_feature_common_generator\\mcu-sdk-2.0\\bin\\generator\\records\\lsdk\\sdk_example\\common\\demo_app_lpc.yml"
+file_path = "E:\\git_sdk_2.0_feature_common_generator\\mcu-sdk-2.0\\bin\\generator\\records\\ksdk\\sdk_example\\common\\driver_example.yml"
+# file_path = "E:\\git_sdk_2.0_feature_common_generator\\mcu-sdk-2.0\\bin\\generator\\records\\lsdk\\sdk_example\\common\\demo_app_lpc.yml"
 new_file_path = "test_yml.yml"
 
 exception_array = Array.new
@@ -24,7 +24,7 @@ begin
             if k_demo.has_key?('files')
                 k_demo['files'].each do |each_source|
                     src_path = each_source["source"]
-                    if src_path.include?('boards/src/demo_apps') or src_path.include?('boards/src/multicore_examples') or src_path.include?('board/src/multiprocessor_examples')
+                    if src_path.include?('boards/src/driver_examples') or src_path.include?('boards/src/rtos_examples') or src_path.include?('boards/src/mmcau_examples')
                         has_board_src = true
                         src_dir = File.dirname(src_path)
                         Dir.foreach(rootdir + src_dir) do |file|
