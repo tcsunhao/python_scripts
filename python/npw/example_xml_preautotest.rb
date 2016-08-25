@@ -37,6 +37,7 @@ class ExampleXmlPreautotest
     def copy_example_xml()
         sdk_repo_board_path = @sdk2_repo_path + '/boards/' + @sdk_board
        
+        puts sdk_repo_board_path
         unless File.exist?(sdk_repo_board_path)
              raise "#{sdk_repo_board_path} doesn't exists. "
         end
@@ -74,10 +75,13 @@ class ExampleXmlPreautotest
 
     def process_cmdargs()
         opt_parser = OptionParser.new do | opts |
-            opts.on("-b", "--board", "The sdk board name, like twrkv58f220m") do | value |
-                @option = "copyxml"
+            opts.on("-b", "--board", String, "The sdk board name, like twrkv58f220m") do | value |
+                @sdk_board = value
+                puts "xxxxxxxxxxx"
+                puts @sdk_board
+                puts "xxxxxxxxxxx"
             end  
-            opts.on("-c", "--copy", "Copy the example.xml file") do | value |
+            opts.on("-c", "--copy", String, "Copy the example.xml file") do | value |
                 @option = "copyxml"
             end            
             opts.on("-d", "--delete", String, "Delete all the example.xml files") do | value |
@@ -88,6 +92,7 @@ class ExampleXmlPreautotest
             end
             opts.on("-r", "--release package path", String, "Release package path") do | value |
                 @release_package_path = value.gsub(/\\/,"/")
+                puts @release_package_path
             end
             opts.on("-s", "--sdk repo path",String, "Sdk2.0 git repo path") do | value |
                 @sdk2_repo_path = value.gsub(/\\/,"/")
