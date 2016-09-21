@@ -7,30 +7,9 @@ require "optparse"
 require "pathname"
 require 'set'
 
+require './music'
 
-
-class Song
-    
-    attr_reader :name 
-    attr_writer :name 
-
-    attr_reader :artist 
-    attr_reader :duration 
-
-    def initialize(name, artist, duration)
-        @name = name
-        @artist = artist
-        @duration = duration
-    end
-
-    # private
-    def to_s()
-        "Song: #{@name} -- #{@artist} (#{@duration})"
-    end
-end
-
-
-class KaraokeSong < Song
+class KaraokeSong < Music::Song
 
     attr_reader :lyrics
 
@@ -48,19 +27,18 @@ end
 class SongList
     MAX_TIME = 30
 
-    def songlist.is_too_long(song)
+    def self.is_too_long(song)
         return song.duration > MAX_TIME
     end
 end
 
+# end
+
 if __FILE__ == $0
     
     song = KaraokeSong.new("Holt", "Fleck", 260, "xxxxxxxxxxxxxx")
-    songlist.is_too_long(song)
+    SongList.is_too_long(song)
     puts song.to_s
-    # song.name = "Holt Sun"
-    # puts song.name
-    # puts song.lyrics
 
 end
 
