@@ -1,23 +1,27 @@
 #!/usr/bin/ruby 
 # -*- coding : utf-8 -*-
 # 
+require 'tempfile'
 
-file_path = "test.txt"
-content_string0 = "I am Holt Sun from NXP, I love ruby.(fuck it!)"
-content_string1 = "Python is much easier than Ruby."
-file_tmp_path = "tmp1.c"
-
-
-begin
-    File.open("tmp1.c", "r") do |file|
-        puts file.class
-        file.each_line do |v|
-            puts v
-        end
-    end
-rescue
-    puts "There is an exception"
+tmpfile = Tempfile.new('my_tmp')
+tmpfile.puts "helloworldswdsfasdfasdfasdfasdfasdfasdfasdf"
+tmpfile.close
+tmpfile.open
+tmpfile.each_line do |each|
+    puts each
 end
+tmpfile.close
+
+
+# f_write = File.open("tmp.txt", "w")
+# File.open("tmp1.c", "r") do |file|
+#     while var = file.gets
+#         puts var
+#         f_write.write(var)
+#     end 
+# end
+# puts "end"
+# f_write.close
 
 
 # 常用文件操作
@@ -41,6 +45,18 @@ end
 #     arr.each { |chr| puts chr  }
 # end
 # 
+
+# 此种方法遍历文件会漏掉一个最后一个空行
+# begin
+#     File.open("tmp1.txt", "r") do |file|
+#         file.each_line do |v|
+#             puts v
+#         end
+#     end
+#     puts "end"
+# rescue
+#     puts "There is an exception"
+# end
 # 
 # 读写文件
 # f_write = File.open("tmp.txt", "w")

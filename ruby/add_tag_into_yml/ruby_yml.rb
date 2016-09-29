@@ -8,16 +8,14 @@ require "find"
 # new_file_path = "test_yml.yml"
 
 exception_array = Array.new
-rootdir = "E:\\git_sdk_2.0_feature_common_generator\\mcu-sdk-2.0\\"
+rootdir = "E:\\git_sdk_2.0_mainline\\mcu-sdk-2.0\\"
 demo_app_yml_path = "bin\\generator\\records\\ksdk\\sdk_example\\common\\demo_app.yml"
 driver_yml_path = "bin\\generator\\records\\ksdk\\lib\\lib_sdk\\common\\drivers\\drv_gpio.yml"
 driver_yml_dir_path = "bin\\generator\\records\\ksdk\\lib\\lib_sdk\\common\\cmsis_driver\\"
 ksdk_yml_dir_path = "bin\\generator\\records\\ksdk\\usb_example\\common"
 ksdk_yml_dir_path = "bin\\generator\\records\\ksdk\\sdk_unittest/common/unit_test"
-lsdk_lib_yml_dir_path = "bin\\generator\\records\\lsdk\\lib\\lib_sdk\\common/"
-lsdk_lib_yml_dir_path = "bin\\generator\\records\\lsdk\\lib\\lib_sdk\\common\\cmsis_drivers\\"
-lsdk_lib_yml_dir_path = "bin\\generator\\records\\lsdk\\lib\\lib_sdk\\common\\drivers\\"
-lsdk_yml_dir_path = "bin\\generator\\records\\lsdk"
+lsdk_lib_yml_dir_path = "bin\\generator\\records\\lsdk\\lib\\lib_sdk\\common\\"
+ksdk_lib_yml_dir_path = "bin\\generator\\records\\ksdk\\lib\\lib_sdk\\common\\"
 
 class RubyYml
     def initialize(ksdk_rootdir, yml_path)
@@ -347,6 +345,50 @@ class RubyYml
 
     end
 
+    def check_whether_meta_exist(dir)
+        @array_wrong_meta_path = Array.new() 
+        @array_meta_exception = Array.new()
+        dir = (@ksdk_rootdir + dir).gsub("\\","/")
+        Dir.glob("#{dir}**/*").each do |filename|
+            next if !File.file?(filename)
+            if File.extname(filename) == ".yml"
+                begin
+                    content = File::read(filename.gsub("\\","/"))
+                    content = YAML::load(content.gsub("\\", "/"))
+                    content.each do |k, v|
+                        v['modules'].each do |driver, driver_content|
+                            
+                            if driver_content.has_key?('files')
+                                driver_content['files'].each do |each_source|
+                                    if File.extname(each_source["source"]) == ".meta"
+                                        meta_path = (@ksdk_rootdir + each_source["source"]).gsub('\\','/')
+                                        unless File.exists?(meta_path)
+                                            unless @array_wrong_meta_path.include?(filename + ' ' + meta_path) 
+                                                @array_wrong_meta_path.push(filename + ' ' + meta_path)  
+                                            end                       
+                                        end 
+                                    end
+                                end
+                            end
+                        end
+                    end
+                rescue
+                    @array_meta_exception.push(filename)
+                end
+
+            end 
+        end
+        puts "*****************"
+        @array_wrong_meta_path.each do |each|
+            puts each
+        end
+
+        puts "*****************"
+        @array_meta_exception.each do |each|
+            puts each
+        end
+    end
+
     private
     def is_main_file(path)
         return true if path.include?("main.c")
@@ -364,7 +406,7 @@ if __FILE__ == $0
 
     obj_releasedir_tag = RubyYml.new(rootdir,"")
     # obj_releasedir_tag.add_releasedir_tag(lsdk_lib_yml_dir_path)
-    obj_releasedir_tag.add_content_afterfind(lsdk_yml_dir_path,"")
+    obj_releasedir_tag.check_whether_meta_exist(lsdk_lib_yml_dir_path)
     # obj_releasedir_tag.add_releasedir_tag_single_yml(rootdir + driver_yml_path)
     # obj_releasedir_tag.add_releasedir_tag_meta_single_yml(rootdir + driver_yml_path)
 end
