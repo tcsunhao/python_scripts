@@ -9,36 +9,51 @@ require 'set'
 
 require './music'
 
-class KaraokeSong < Music::Song
+module Music
+ 
+    class KaraokeSong < Song
 
-    attr_reader :lyrics
+        attr_reader :lyrics
 
-    def initialize(name, artist, duration, lyrics)
-        super(name, artist, duration)
-        @lyrics = lyrics
+        def initialize(name, artist, duration, lyrics)
+            super(name, artist, duration)
+            @lyrics = lyrics
+        end
+
+        def to_s()
+            puts "i am in"
+            super + "   #{@lyrics}"
+        end
     end
 
-    def to_s()
-        puts "i am in"
-        super + "   #{@lyrics}"
+    class SongList
+        MAX_TIME = 30
+
+        def self.is_too_long(song)
+            return song.duration > MAX_TIME
+        end
     end
+
 end
 
-class SongList
-    MAX_TIME = 30
-
-    def self.is_too_long(song)
-        return song.duration > MAX_TIME
-    end
+class RingArray < Array
+    def [](i)
+        idx = i % size()
+        super(idx)
+    end    
 end
 
-# end
 
 if __FILE__ == $0
     
-    song = KaraokeSong.new("Holt", "Fleck", 260, "xxxxxxxxxxxxxx")
-    SongList.is_too_long(song)
+    song = Music::KaraokeSong.new("Holt", "Fleck", 260, "xxxxxxxxxxxxxx")
+    puts song.lyrics
+    Music::SongList.is_too_long(song)
     puts song.to_s
+
+    wday = RingArray['1','2']
+    puts wday.inspect    
+    puts wday.size
 
 end
 

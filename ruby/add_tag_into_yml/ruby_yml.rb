@@ -8,13 +8,22 @@ require "find"
 # new_file_path = "test_yml.yml"
 
 exception_array = Array.new
-rootdir = "E:\\git_sdk_2.0_feature_common_main_tag\\mcu-sdk-2.0\\"
+rootdir = "E:\\git_sdk_2.0_feature_common_generator\\mcu-sdk-2.0\\"
 demo_app_yml_path = "bin\\generator\\records\\ksdk\\sdk_example\\common\\demo_app.yml"
+driver_yml_path = "bin\\generator\\records\\ksdk\\lib\\lib_sdk\\common\\drivers\\drv_gpio.yml"
+driver_yml_dir_path = "bin\\generator\\records\\ksdk\\lib\\lib_sdk\\common\\cmsis_driver\\"
+ksdk_yml_dir_path = "bin\\generator\\records\\ksdk\\usb_example\\common"
+ksdk_yml_dir_path = "bin\\generator\\records\\ksdk\\sdk_unittest/common/unit_test"
+lsdk_lib_yml_dir_path = "bin\\generator\\records\\lsdk\\lib\\lib_sdk\\common/"
+lsdk_lib_yml_dir_path = "bin\\generator\\records\\lsdk\\lib\\lib_sdk\\common\\cmsis_drivers\\"
+lsdk_lib_yml_dir_path = "bin\\generator\\records\\lsdk\\lib\\lib_sdk\\common\\drivers\\"
+lsdk_yml_dir_path = "bin\\generator\\records\\lsdk"
 
 class RubyYml
     def initialize(ksdk_rootdir, yml_path)
         @ksdk_rootdir = ksdk_rootdir
         @yml_path = yml_path
+        @exception_release_dir = Array.new()
         @reg_app_h = /\/app/
         @reg_hardware = /\/hardware_init/
     end
@@ -217,6 +226,126 @@ class RubyYml
 
     end 
 
+    def add_releasedir_tag(dir)
+        @exception_release_dir = Array.new()
+        dir = (@ksdk_rootdir + dir).gsub("\\","/")
+        Dir.glob("#{dir}**/*").each do |filename|
+            next if !File.file?(filename)
+            if filename =~ /drv_.+yml/
+                puts filename
+                # add_releasedir_tag_meta_single_yml(filename)
+                add_releasedir_tag_single_yml(filename)
+            end 
+        end
+
+        @exception_release_dir.each do |each|
+            puts each
+        end
+    end
+
+    def add_releasedir_tag_meta_single_yml(yml_path)
+        begin 
+            content = File::read(yml_path.gsub("\\","/"))
+            content = YAML::load(content.gsub("\\", "/"))
+            drivername = nil
+            content.each do |k, v|
+                v['modules'].each do |driver, driver_content|
+                    drivername = driver
+                    if driver_content.has_key?("virtual-dir")
+                        virtualdir = driver_content["virtual-dir"]
+                        driver_content.delete("virtual-dir")
+                    end
+
+                    driver_content['files'].each do |each_source|
+                        unless each_source.has_key?("virtual-dir") 
+                            each_source["virtual-dir"] = virtualdir
+                        end 
+                    end
+
+                    key = driver_content['files'][0]["source"].split('.')[0] + ".meta"
+                    driver_meta_path = @ksdk_rootdir + key
+                    if File::exists?(driver_meta_path)
+                        driver_content['files'].push({"source" => key})
+                    else
+                        driver_content['files'].push({"source" => key})
+                        unless @exception_release_dir.include?({yml_path=>"add meta"})  
+                            @exception_release_dir.push({yml_path=>"add meta"})  
+                        end
+                    end
+                end
+                # Add attribute : hidden for meta file
+                v['modules'].each do |driver, driver_content|
+                    driver_content['files'].each do |each_source|
+                        if File::extname(File::basename(each_source["source"])) == ".meta"
+                            each_source["attribute"] = "hidden"
+                        end 
+                    end
+                end
+            end
+        rescue
+            unless @exception_release_dir.include?({yml_path=>"add meta"})  
+                @exception_release_dir.push({yml_path=>"add meta"})  
+            end
+        end
+        YAML::dump(content, File.open((yml_path).gsub("\\","/"),'w'))
+    end
+
+    def add_releasedir_tag_single_yml(yml_path)
+        begin
+            content = File::read(yml_path.gsub("\\","/"))
+            content = YAML::load(content.gsub("\\", "/"))
+            drivername = nil
+            content.each do |k, v|
+                v['modules'].each do |driver, driver_content|
+                    drivername = driver
+                    # include path
+                    driver_content["cc-include"].each do |each_include|
+                        unless each_include.has_key?("release-dir")
+                            each_include["release-dir"] = "devices/${platform_devices_soc_name}/drivers"
+                        end
+                    end
+                    
+                    if driver_content.has_key?('files')
+                        driver_content['files'].each do |each_source|
+                            if each_source["source"].include?("platform/drivers")
+                                unless each_source.has_key?("release-dir")
+                                    each_source["release-dir"] = "devices/${platform_devices_soc_name}/drivers"
+                                end
+                            else
+                                unless @exception_release_dir.include?({yml_path=>"add tag"}) 
+                                    @exception_release_dir.push({yml_path=>"add tag"})  
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        rescue
+            unless @exception_release_dir.include?({yml_path=>"add tag"}) 
+                @exception_release_dir.push({yml_path=>"add tag"})  
+            end
+        end
+        YAML::dump(content, File.open(yml_path.gsub("\\","/"),'w'))
+    end   
+
+    def add_content_afterfind(dir, target)
+        dir = (@ksdk_rootdir + dir).gsub("\\","/")
+        Dir.glob("#{dir}/**/*").each do |filename|
+            next if !File.file?(filename)
+            if File.extname(filename) == ".yml"
+                content = ""
+                File.open(filename,"r") {|f| content = f.readlines}
+                file = File.open(filename,"w")
+                content.each do |line|
+                    file.puts line                 
+                    if line.include?("add_free")
+                        file.puts("  - ksdk/shared/add_misc_utilities.yml")
+                    end
+                end
+            end 
+        end
+
+    end
 
     private
     def is_main_file(path)
@@ -228,16 +357,14 @@ class RubyYml
         end
         return false
     end
-    
 end
 
 
 if __FILE__ == $0
 
-    obj_main_tag = RubyYml.new(rootdir,demo_app_yml_path)
-    # obj_main_tag.add_main_sub_tag()
-    # obj_main_tag.add_sub_tag_usb("bin\\generator\\records\\ksdk\\usb_example\\twrk64f120m")
-    obj_main_tag.add_sub_tag_sdk(demo_app_yml_path)
-
+    obj_releasedir_tag = RubyYml.new(rootdir,"")
+    # obj_releasedir_tag.add_releasedir_tag(lsdk_lib_yml_dir_path)
+    obj_releasedir_tag.add_content_afterfind(lsdk_yml_dir_path,"")
+    # obj_releasedir_tag.add_releasedir_tag_single_yml(rootdir + driver_yml_path)
+    # obj_releasedir_tag.add_releasedir_tag_meta_single_yml(rootdir + driver_yml_path)
 end
-

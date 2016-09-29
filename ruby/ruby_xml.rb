@@ -4,6 +4,7 @@
 require "nokogiri"
 require "rubygems"
 
+xml_path = ""
 
 begin
     meta_doc = Nokogiri::XML(File.open("./hello_world.meta")) {|f| f.noblanks}
