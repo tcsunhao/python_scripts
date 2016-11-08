@@ -1,0 +1,12 @@
+sdk.location = C:\\Users\\b55235\\mcuxpresso\\SDKPackages\\SDK_2.0_MK64FN1M0xxx12
+example.xml = C:\\Users\\b55235\\mcuxpresso\\SDKPackages\\SDK_2.0_MK64FN1M0xxx12\\boards\\twrk64f120m\\demo_apps\\hello_world\\mcux\\hello_world.xml
+nature = org.eclipse.cdt.core.cnature
+standalone = true
+project.build = true
+clean.workspace = false
+build.all = false
+skip.default = true
+sdk.name = SDK_2.0_MK64FN1M0xxx12
+board.id = twrk64f120m
+verbose = true
+project.build.log = false

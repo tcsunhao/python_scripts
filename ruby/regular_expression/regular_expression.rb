@@ -19,11 +19,12 @@ path2 = "boards/twrkl82z72m/demo_apps/hello_world_qspi/startup/system_MKL82Z7.c"
 path3 = "middleware/wolfssl/wolfssl/wolfcrypt/arc4.h"
 board = "twrkl82z72m"
 path4 = "CMSIS/Driver/Include/Driver_USART.h"
+line = " -Xlinker --gc-sections -Xlinker -static -Xlinker -z -Xlinker muldefs"
 
 if __FILE__ == $0
 
     # puts File.dirname(path4)
-    case File.dirname(path4)
+    # case File.dirname(path4)
     # when /^\/?boards\/#{board}\/(\w*)\/\w*\/startup$/
     #     puts $1
     #     puts 'startup'  
@@ -32,10 +33,13 @@ if __FILE__ == $0
     # when /^\/?(rtos|middleware)\/(?<prefix>\w*)\/(?<relpath>.*)/
     #     puts $~[:prefix]
     #     puts $~[:relpath]
-    when /^\/?CMSIS\/Driver\/Include/
-        puts 'CMSIS/Driver/Include'        
-    end
-  
+    # when /^\/?CMSIS\/Driver\/Include/
+    #     puts 'CMSIS/Driver/Include'        
+    # end
+    pattern = /\s-Xlinker\s(\S+)/
+    result  = line.match(pattern)
+    puts result.inspect
+    puts result.class    
 end
 
 

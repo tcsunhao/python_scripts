@@ -70,7 +70,9 @@ def __read_options():
     parser.add_argument('-n', '--buildname', help='The build name. A build name is needed for every build to distinguish itself from others')
     parser.add_argument('-m', '--mode', default=None, help='The build mode, debug, release, all')
     parser.add_argument('-r', '--rootdir', default=None, help="The root director path which contains the projects need to be built. If you have edit the 'rootdir' in the py file, you don\'t need to concern it in the command line.")
-
+    parser.add_argument('-sa', action='store_true', default=False, dest="standalone", help="If sa, it will copy the files from the sdk to the workspace, otherwise it will link them.")
+    parser.add_argument("-f", "--proj_listfile", metavar='', help="Get project lists from file")
+    
     return parser.parse_args()
 
 def __output_log(proj_num_dict, file_pass, file_warning, file_fail, file_log):

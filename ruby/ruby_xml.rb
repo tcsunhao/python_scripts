@@ -7,8 +7,8 @@ require "rubygems"
 xml_path = ""
 
 begin
-    meta_doc = Nokogiri::XML(File.open("./hello_world.meta")) {|f| f.noblanks}
-    example_node = meta_doc.at_xpath('//examples')
+    meta_doc = Nokogiri::XML(File.open("fsl_gpio.meta")) {|f| f.noblanks}
+    component_node = meta_doc.xpath('//metadata/components/component')
     puts meta_doc
-    puts example_node
+    puts component_node
 end
