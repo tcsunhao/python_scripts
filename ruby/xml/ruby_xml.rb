@@ -11,15 +11,15 @@ macro_array = ['DEBUG', 'CPU_MK64FN1M0VMD12', 'FSL_RTOS_FREE_RTOS','PRINTF_FLOAT
 
 begin
 
-    xmlpath = './tmp.xml'
-
-    project_definition_xml = Nokogiri::XML(File.open("./hello_world.xml")) {|f| f.noblanks}
-    # puts project_definition_xml
-    project_node = project_definition_xml.at_xpath("/examples/example/projects/project[@nature=\"org.eclipse.cdt.core.cnature\"]")
-    
-    unless project_node == nil
-        project_node['nature'] = "org.eclipse.cdt.core.ccnature"
+    project_definition_xml = Nokogiri::XML(File.open("./fsl_gpio.meta")) {|f| f.noblanks}
+    externalDefinitions_node = project_definition_xml.at_xpath('//examples/externalDefinitions')
+        
+    externalDefinitions_node.children().each do |node|
+        puts node['extID']
     end
+    # unless project_node == nil
+    #     project_node['nature'] = "org.eclipse.cdt.core.ccnature"
+    # end
     # puts project_node['nature']
     # option_node.each do |each|
     #     if each.content.empty?
@@ -44,8 +44,8 @@ begin
     #         cc_defsymbols_node_debug << macro_node
     #     end
 
-    File.open(xmlpath, "w") do |f|
-        f.write(project_definition_xml.to_xml(:encoding => "UTF-8"))
-    end    
+    # File.open(xmlpath, "w") do |f|
+    #     f.write(project_definition_xml.to_xml(:encoding => "UTF-8"))
+    # end    
     # end
 end

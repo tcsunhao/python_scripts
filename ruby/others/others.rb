@@ -40,6 +40,8 @@ class Generator < GeneratorUp
     end
 end
 
+
+
 if __FILE__ == $0
     # method_test("one", "two", "three",Country:"China")
     # log("hello", "INFO")
@@ -55,6 +57,9 @@ if __FILE__ == $0
                 refer_paths:        "p_refer_paths",
                 generate_options:   "p_generate_options"
             )
+
+
+
 end
 
 
